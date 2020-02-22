@@ -1,13 +1,13 @@
 module.exports = {
 
-  title: 'H5Vue',
+  title: '合规周',
 
   /**
    * @type {boolean} true | false
    * @description Whether fix the header
    */
   fixedHeader: false,
-  vconsole: true,
+  vconsole: false,
   needPageTrans: true,
 
   /**

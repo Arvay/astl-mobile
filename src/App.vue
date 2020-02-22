@@ -12,6 +12,8 @@
 import defaultSetting from './settings'
 export default {
   name: 'app',
+  created () {
+  },
   computed: {
     transitionName () {
       if (defaultSetting.needPageTrans) {

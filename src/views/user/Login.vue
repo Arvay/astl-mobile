@@ -1,27 +1,27 @@
 <template>
   <div>
-    <div class="header">
-      <div class="logo">
-        <img src="http://img.cixi518.com/ljh_logo.jpeg" alt="default_logo">
-      </div>
-    </div>
-    <div class="content">
-      <van-field placeholder="手机号码" v-model="phoneNumber" left-icon="phone-o" :error-message="phoneNumberError" />
-      <!-- eye -->
-      <van-field v-if="loginWay==='password'" placeholder="登录密码" v-model="password" left-icon="lock" :type="passwordType">
-         <van-icon slot="right-icon" @click="switchPasswordType" :name="passwordIcon"/>
-      </van-field>
-      <van-field v-else placeholder="短信验证码" v-model="password" left-icon="comment-o" type="text">
-        <VerifyCodeBtn slot="button" @sendVerifyCode="sendVerifyCode" />
-      </van-field>
-      <div class="button-wrap">
-        <van-button size="large" @click="handleLogin" type="info">登录</van-button>
-      </div>
-      <div class="more-wrap">
-        <router-link class="link" to="/register">没有账号？去注册</router-link>
-        <div class="switch-way" @click="switchLoginWay">{{loginWayObj.toggleMsg}}</div>
-      </div>
-    </div>
+<!--    <div class="header">-->
+<!--      <div class="logo">-->
+<!--        <img src="http://img.cixi518.com/ljh_logo.jpeg" alt="default_logo">-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="content">-->
+<!--      <van-field placeholder="手机号码" v-model="phoneNumber" left-icon="phone-o" :error-message="phoneNumberError" />-->
+<!--      &lt;!&ndash; eye &ndash;&gt;-->
+<!--      <van-field v-if="loginWay==='password'" placeholder="登录密码" v-model="password" left-icon="lock" :type="passwordType">-->
+<!--         <van-icon slot="right-icon" @click="switchPasswordType" :name="passwordIcon"/>-->
+<!--      </van-field>-->
+<!--      <van-field v-else placeholder="短信验证码" v-model="password" left-icon="comment-o" type="text">-->
+<!--        <VerifyCodeBtn slot="button" @sendVerifyCode="sendVerifyCode" />-->
+<!--      </van-field>-->
+<!--      <div class="button-wrap">-->
+<!--        <van-button size="large" @click="handleLogin" type="info">登录</van-button>-->
+<!--      </div>-->
+<!--      <div class="more-wrap">-->
+<!--        <router-link class="link" to="/register">没有账号？去注册</router-link>-->
+<!--        <div class="switch-way" @click="switchLoginWay">{{loginWayObj.toggleMsg}}</div>-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </template>
 <script>
