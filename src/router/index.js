@@ -1,6 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from 'views/Home.vue'
+import NoteBook from 'views/home-meun/notebook/notebook'
+import Creativity from 'views/home-meun/creativity/index'
+import CreativityDetails from 'views/home-meun/creativity/base/details'
+import Spokesperson from 'views/home-meun/spokesperson/index'
+import Lookback from 'views/home-meun/look-back/index'
+import Ranking from 'views/home-meun/ranking/index'
+import SilkBag from 'views/home-meun/silk-bag/index'
+import SilkBagDetail from 'views/home-meun/silk-bag/base/detail'
 import store from '@/store'
 
 Vue.use(Router)
@@ -12,7 +20,73 @@ let routes = [
     component: Home,
     meta: {
       title: '首页',
-      keepAlive: true
+      keepAlive: false
+    }
+  },
+  {
+    path: '/notebook',
+    name: '合规手册',
+    component: NoteBook,
+    meta: {
+      title: '合规手册',
+      keepAlive: false
+    }
+  },
+  {
+    path: '/creativity',
+    name: '合规创意大赛',
+    component: Creativity,
+    meta: {
+      title: '合规创意大赛',
+      keepAlive: false
+    }
+  },
+  {
+    path: '/creativityDetails/:type',
+    name: '合规创意大赛-详情',
+    component: CreativityDetails,
+    meta: {
+      title: '合规创意大赛-详情'
+    }
+  },
+  {
+    path: '/spokesperson',
+    name: '合规代言人',
+    component: Spokesperson,
+    meta: {
+      title: '合规代言人'
+    }
+  },
+  {
+    path: '/lookback',
+    name: '精彩回归',
+    component: Lookback,
+    meta: {
+      title: '精彩回归'
+    }
+  },
+  {
+    path: '/giftbag',
+    name: '合规锦囊',
+    component: SilkBag,
+    meta: {
+      title: '合规锦囊'
+    }
+  },
+  {
+    path: '/giftBagDetail/:id',
+    name: '合规锦囊-详情',
+    component: SilkBagDetail,
+    meta: {
+      title: '合规锦囊-详情'
+    }
+  },
+  {
+    path: '/ranking',
+    name: '积分排名',
+    component: Ranking,
+    meta: {
+      title: '积分排名'
     }
   },
   {
@@ -45,7 +119,7 @@ routes = routes.concat({
 })
 
 const createRouter = () => new Router({
-  mode: 'history', // require service support
+  // mode: 'history', // require service support
   base: process.env.BASE_URL,
   scrollBehavior: () => ({ y: 0 }),
   routes

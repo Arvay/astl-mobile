@@ -8,8 +8,9 @@ import 'utils/permission'
 import SvgIcon from 'components/SvgIcon'
 import '@/icons' // icon
 import '@/style/common.scss'
-import { Lazyload } from 'vant'
+import { Lazyload, Popup, Image, ImagePreview, Overlay, Field, List } from 'vant'
 import defaultSettings from '@/settings'
+import vueEsign from 'vue-esign'
 
 /**
  * If you don't want to use mock-server
@@ -19,13 +20,21 @@ import defaultSettings from '@/settings'
  * Currently MockJs will be used in the production environment,
  * please remove it before going online! ! !
  */
-import { mockXHR } from '../mock'
 
 if (process.env.NODE_ENV === 'production') {
-  mockXHR()
+  // mockXHR()
 }
 
 FastClick.attach(document.body)
+
+// 手写板
+Vue.use(vueEsign)
+Vue.use(Popup)
+Vue.use(Image)
+Vue.use(ImagePreview)
+Vue.use(Overlay)
+Vue.use(Field)
+Vue.use(List)
 
 // options 为可选参数，无则不传
 Vue.use(Lazyload)

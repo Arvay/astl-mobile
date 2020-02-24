@@ -1,11 +1,6 @@
 <template>
   <div id="app">
-    <transition :name="transitionName">
-      <keep-alive v-if="$route.meta.keepAlive">
-        <router-view class="router"></router-view>
-      </keep-alive>
-      <router-view class="router" v-else></router-view>
-    </transition>
+    <router-view class="router"></router-view>
   </div>
 </template>
 <script>
@@ -26,6 +21,17 @@ export default {
 </script>
 
 <style lang="scss">
+.back {
+  z-index: 9;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  width: 50px;
+  height: 30px;
+  img {
+    width: 100%;
+  }
+}
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -34,6 +40,7 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  background: #FEFDF5;
 }
 
 .router {

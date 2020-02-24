@@ -25,9 +25,6 @@
   </div>
 </template>
 <script>
-import { Field, Icon, Button } from 'vant'
-import { mapActions } from 'vuex'
-import VerifyCodeBtn from '@/components/VerifyCodeBtn'
 export default {
   name: 'Login',
   data () {
@@ -62,33 +59,11 @@ export default {
         $route: this.$route
       }
       this.login(data)
-    },
-    ...mapActions({
-      login: 'user/login'
-    })
-  },
-  computed: {
-    loginWayObj: function () {
-      if (this.loginWay === 'password') {
-        return {
-          icon: 'closed-eye',
-          toggleMsg: '验证码登录'
-        }
-      }
-      return {
-        icon: 'eye',
-        toggleMsg: '密码登录'
-      }
-    },
-    passwordIcon: function () {
-      return this.passwordType === 'password' ? 'closed-eye' : 'eye'
     }
   },
+  computed: {
+  },
   components: {
-    [Field.name]: Field,
-    [Icon.name]: Icon,
-    [Button.name]: Button,
-    VerifyCodeBtn
   }
 }
 </script>
