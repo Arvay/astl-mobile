@@ -17,10 +17,8 @@
         <li>
           <img @click="videoPlay" class="list_banner" :src="CYDSBanner" alt="">
           <div class="info" style="text-align: left;">
-            <div class="title van-ellipsis">
-              【吴梦彤】一生行走，合规为伴
-              【吴梦彤】一生行走，合规为伴
-              【吴梦彤】一生行走，合规为伴
+            <div class="title">
+              吴梦一生行走，合规为吴梦一生行走，合规为合规为合吴梦一生行走，合规为吴梦一生行走，合规为合规为合
             </div>
             <div class="num">
               <img :src="LLIcon" alt="">
@@ -142,7 +140,11 @@ export default {
     position: relative;
   }
   .title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     width: 295px;
+    overflow: hidden;
     font-family: PingFangSC-Regular;
     font-size: 16px;
     color: #5D422B;

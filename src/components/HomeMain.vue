@@ -7,7 +7,7 @@
       <ul class="menu" style="margin-top: 0">
         <li>
           <!--2020合规周-->
-          <img @click="test" src="../assets/HOME_HGZ_icon.png" alt="">
+          <img @click="goMeun('/schedule')" src="../assets/HOME_HGZ_icon.png" alt="">
         </li>
         <li>
           <!--合规锦囊-->
@@ -50,6 +50,8 @@
   </div>
 </template>
 <script>
+import http from '@/api/http'
+import { Api } from '@/api/api'
 export default {
   name: 'FooterTabbar',
   data () {
@@ -57,7 +59,11 @@ export default {
   },
   methods: {
     test () {
-      window.open('https://open.weixin.qq.com/connect/oauth2/authorize?appid=ww33e8237769abe43c&redirect_uri=astl.magical-light.com&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect')
+      let coder = 'JHfwUmZzZBYkYhaoAmbKXrWRLgZnJEuSfBr7v8Op2H0'
+      http.get(Api.getUserId + coder, res => {
+        console.log(res)
+      })
+      // window.open('https://open.weixin.qq.com/connect/oauth2/authorize?appid=ww1f0087e1de18858f&redirect_uri=astl.magical-light.com&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect')
     },
     goMeun (url) {
       this.$router.push({ path: url })

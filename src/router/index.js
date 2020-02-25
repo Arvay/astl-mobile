@@ -9,6 +9,7 @@ import Lookback from 'views/home-meun/look-back/index'
 import Ranking from 'views/home-meun/ranking/index'
 import SilkBag from 'views/home-meun/silk-bag/index'
 import SilkBagDetail from 'views/home-meun/silk-bag/base/detail'
+import Schedule from 'views/home-meun/schedule/index'
 import store from '@/store'
 
 Vue.use(Router)
@@ -79,6 +80,14 @@ let routes = [
     component: SilkBagDetail,
     meta: {
       title: '合规锦囊-详情'
+    }
+  },
+  {
+    path: '/schedule',
+    name: '2020合规周',
+    component: Schedule,
+    meta: {
+      title: '2020合规周'
     }
   },
   {

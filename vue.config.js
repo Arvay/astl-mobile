@@ -41,18 +41,53 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
+    },
+    proxy: {
+      '/userinfo': {
+        target: 'http://47.94.146.245:11010',
+        changOrigin: true
+      },
+      '/comment': {
+        target: 'http://47.94.146.245:11010/comment',
+        ws: true,
+        changOrigin: true,
+        pathRewrite: {
+          '^/comment': '/'
+        }
+      },
+      '/user': {
+        target: 'http://47.94.146.245:11010/user',
+        ws: true,
+        changOrigin: true,
+        pathRewrite: {
+          '^/user': '/'
+        }
+      },
+      '/link': {
+        target: 'http://47.94.146.245:11010/link',
+        ws: true,
+        changOrigin: true,
+        pathRewrite: {
+          '^/link': '/'
+        }
+      },
+      '/activity': {
+        target: 'http://47.94.146.245:11010/activity',
+        ws: true,
+        changOrigin: true,
+        pathRewrite: {
+          '^/activity': '/'
+        }
+      },
+      '/vote': {
+        target: 'http://47.94.146.245:11010/vote',
+        ws: true,
+        changOrigin: true,
+        pathRewrite: {
+          '^/vote': '/'
+        }
+      }
     }
-    // proxy: {
-    //   // change xxx-api/login => mock/login
-    //   // detail: https://cli.vuejs.org/config/#devserver-proxy
-    //   // [process.env.VUE_APP_BASE_API]: {
-    //   //   target: `http://127.0.0.1:${port}/mock`,
-    //   //   changeOrigin: true,
-    //   //   pathRewrite: {
-    //   //     ['^' + process.env.VUE_APP_BASE_API]: ''
-    //   //   }
-    //   // }
-    // }
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
