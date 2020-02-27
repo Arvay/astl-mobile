@@ -11,7 +11,6 @@ import '@/style/common.scss'
 import { Lazyload, Popup, Image, ImagePreview, Overlay, Field, List } from 'vant'
 import defaultSettings from '@/settings'
 import vueEsign from 'vue-esign'
-
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -42,11 +41,15 @@ Vue.use(Lazyload)
 Vue.component('svg-icon', SvgIcon)
 
 if (process.env.NODE_ENV === 'development' && defaultSettings.vconsole) {
-  const VConsole = require('vconsole')
+  // const VConsole = require('vconsole')
   // eslint-disable-next-line
+  // const my_console = new VConsole()
+}
+let href = window.location.href
+if (href.indexOf('localhost') < 0) {
+  const VConsole = require('vconsole')
   const my_console = new VConsole()
 }
-// var vConsole = new VConsole(option)
 
 Vue.config.productionTip = false
 

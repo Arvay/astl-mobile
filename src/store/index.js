@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import createLoadingPlugin from 'utils/vuex-loading'
+import user from './vv/modules/user'
+import getters from './vv/getters'
 
 Vue.use(Vuex)
 
@@ -12,20 +13,10 @@ files.keys().forEach(key => {
 })
 
 export default new Vuex.Store({
-  plugins: [createLoadingPlugin()],
   state: {
     direction: 'forward' // 页面切换方向
   },
-  getters: {
-    userData (state, getters) {
-      return state.user.user
-      // return getters['user/user']
-    }
-    // vuex 全局getters引入局部
-    // token () {
-    //   return store.getters['user/token']
-    // }
-  },
+  getters,
   mutations: {
     // 更新页面切换方向
     updateDirection (state, direction) {
@@ -35,5 +26,7 @@ export default new Vuex.Store({
   actions: {
 
   },
-  modules
+  modules: {
+    user
+  }
 })

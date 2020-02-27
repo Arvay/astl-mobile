@@ -2,53 +2,86 @@ import router from '@/router'
 import { Dialog } from 'vant'
 import getPageTitle from '@/utils/get-page-title'
 import http from '@/api/http'
+import store from '@/store'
 import { Api } from '@/api/api'
 
-const ua = window.navigator.userAgent.toLowerCase()
-let hash = window.location.hash
 const href = window.location.href
+let hash = window.location.href
 if (hash.indexOf('code=') > 0) {
   hash = hash.split('code=')[1]
   var wxCode = hash.split('&')[0]
 }
-var userId = 'wei.chen@magical-light.com'
+var userId = ''
+if (localStorage.getItem('userId')) {
+  userId = localStorage.getItem('userId')
+}
 router.beforeEach(async (to, from, next) => {
   // 设置页面标题
   document.title = getPageTitle(to.meta.title)
 
   /* 判断是否是在企业微信中打开 */
-  if (href.indexOf('localhost')) {
+  if (href.indexOf('localhost') >= 0) {
+    userId = 'wei.chen@magical-light.com'
+    store.dispatch('setUserId', userId)
+    http.get(Api.getUserInfo + userId).then(res => {
+      // store.dispatch('setUserName', res.data.name)
+      // store.dispatch('setUserImg', res.data.avatar)
+      // store.dispatch('setUserEmail', res.data.email)
+      // localStorage.setItem('userName', res.data.name)
+      // localStorage.setItem('userEmail', res.data.email)
+      // localStorage.setItem('userImg', res.data.avatar)
+      next()
+    })
     main()
   } else {
-    if ((ua.match(/MicroMessenger/i) === 'micromessenger') && (ua.match(/wxwork/i) === 'wxwork')) {
-      main()
-    } else {
-      Dialog.alert({
-        showConfirmButton: false,
-        message: '请在安斯泰来企业微信中打开！'
-      })
-    }
+    main()
   }
 
+  store.dispatch('setUserId', localStorage.getItem('userId'))
+  store.dispatch('setUserName', localStorage.getItem('userName'))
+  store.dispatch('setUserEmail', localStorage.getItem('userEmail'))
+  store.dispatch('setUserImg', localStorage.getItem('userImg'))
+
   function main () {
-    if (!userId) {
+    if (userId !== '' && userId !== undefined && userId !== null && userId !== 'undefined') {
+      next()
+    } else {
       /* 如果没有用户信息 先去微信授权获取code */
-      window.open('https://open.weixin.qq.com/connect/oauth2/authorize?appid=ww1f0087e1de18858f&redirect_uri=astl.magical-light.com&response_type=code&scope=snsapi_base&state=Ghost#wechat_redirect')
-      /* 有code后获取用户微信ID */
+      let hash = window.location.href
+      if (hash.indexOf('code=') >= 0) {
+        window.open('https://open.weixin.qq.com/connect/oauth2/authorize?appid=ww1f0087e1de18858f&redirect_uri=astl.magical-light.com&response_type=code&scope=snsapi_base&state=Ghost#wechat_redirect')
+        hash = hash.split('code=')[1]
+        wxCode = hash.split('&')[0]
+      }
       if (wxCode) {
         http.get(Api.getUserId + wxCode).then(res => {
-          userId = res.data.data
-          localStorage.setItem('userId', userId)
-          /* 有用户ID后获取 用户基础信息 */
-          http.get(Api.getUserInfo + userId).then(res => {
-            localStorage.setItem('userName', res.data.name)
-            localStorage.setItem('userImg', res.data.avatar)
-            next()
+          if (res.code === 0) {
+            userId = res.data
+            store.dispatch('setUserId', userId)
+            localStorage.setItem('userId', userId)
+            /* 有用户ID后获取 用户基础信息 */
+            http.get(Api.getUserInfo + userId).then(res => {
+              store.dispatch('setUserName', res.data.name)
+              store.dispatch('setUserImg', res.data.avatar)
+              store.dispatch('setUserEmail', res.data.email)
+              localStorage.setItem('userName', res.data.name)
+              localStorage.setItem('userEmail', res.data.email)
+              localStorage.setItem('userImg', res.data.avatar)
+              next()
+            })
+          } else {
+            Dialog.alert({
+              message: '请在指定企业微信中打开'
+            })
+          }
+        }).catch(() => {
+          Dialog.alert({
+            message: '请在指定企业微信中打开'
           })
         })
+      } else {
+        next()
       }
-    } else {
-      next()
     }
   }
 })

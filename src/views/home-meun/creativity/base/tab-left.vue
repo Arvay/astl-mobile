@@ -1,18 +1,19 @@
 <template>
   <div>
     <ul class="list">
-      <li>
+      <li v-for="item in listDate" :key="item.id">
         <van-image
-          @click="goDetail(CYDSBanner2)"
+          @click="goDetail(item.image)"
           width="170px"
           height="170px"
+          radius="4px"
           fit="cover"
-          :src="CYDSBanner2"
+          :src="item.image"
         />
         <div class="info">
           <p>
             <span class="num">排名：1</span>
-            <span class="name">陈威</span>
+            <span class="name">{{item.name}}</span>
           </p>
           <p class="score">票数：333</p>
           <div class="vote_btn">
@@ -31,18 +32,27 @@ import CYDSBanner from '@/assets/CYDS_banner.png'
 import TPDefeat from '@/assets/TP_defeat.png'
 import TPCLick from '@/assets/TP_CLick.png'
 import CYDSBanner2 from '@/assets/about2.jpg'
+import http from '@/api/http'
+import { Api } from '@/api/api'
 export default {
   data () {
     return {
       CYDSBanner2: CYDSBanner2,
       CYDSBanner: CYDSBanner,
       TPDefeat: TPDefeat,
-      TPCLick: TPCLick
+      TPCLick: TPCLick,
+      listDate: ''
     }
   },
   created: function () {
+    this.getList()
   },
   methods: {
+    getList () {
+      http.get(Api.getActivityList + '1').then(res => {
+        this.listDate = res.data
+      })
+    },
     goDetail (src) {
       ImagePreview ({
         images: [
@@ -103,7 +113,7 @@ export default {
       margin-bottom: 16px;
       width: 170px;
       img {
-        border-radius: 8px;
+        border-radius: 4px;
         width: 170px;
         height: 170px;
       }

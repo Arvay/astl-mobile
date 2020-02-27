@@ -1,38 +1,40 @@
 <template>
   <div class="box_box">
-    <div class="text van-hairline--bottom">
-      <div @click="goDetail(1)">
-        <p class="van-ellipsis title">合规、你我共创 、木受绳直、金就砺刚金就砺刚金就砺刚金就砺刚金就砺刚金就砺刚</p>
-        <div class="info">
-          <span class="num">排名：1</span>
-          <span class="name">陈威</span>
-          <span class="name score">票数：111111</span>
-        </div>
-        <div @click.stop="test" class="vote_btn">
-          <img :src="TPDefeat" alt=""> <!--未投-->
-          <!--              <img :src="TPCLick" alt=""> &lt;!&ndash;已投&ndash;&gt;-->
-        </div>
-      </div>
-    </div>
-    <!--第二种形态-->
-    <div class="img_text van-hairline--bottom">
-      <div @click="goDetail(2)">
-        <van-image
-          class="banner"
-          fit="cover"
-          :src="CYDSBanner"
-        />
-        <div class="info">
-          <span class="num">排名：1</span>
-          <span class="name">周梦华</span>
-          <span class="score">票数：999</span>
-          <div @click="test" class="vote_btn">
+    <div v-for="item in listDate" :key="item.id">
+      <div v-if="item.image===''" class="text van-hairline--bottom">
+        <div @click="goDetail(1, item.id)">
+          <p class="van-ellipsis title">{{item.title}}</p>
+          <div class="info">
+            <span class="num">排名：1</span>
+            <span class="name">{{item.name}}</span>
+            <span class="name score">票数：111111</span>
+          </div>
+          <div @click.stop="test" class="vote_btn">
             <img :src="TPDefeat" alt=""> <!--未投-->
             <!--              <img :src="TPCLick" alt=""> &lt;!&ndash;已投&ndash;&gt;-->
           </div>
         </div>
       </div>
-      <div style="height: 15px"></div>
+      <!--第二种形态-->
+      <div v-if="item.image!==''" class="img_text van-hairline--bottom">
+        <div @click="goDetail(2, item.id)">
+          <van-image
+            class="banner"
+            fit="cover"
+            :src="item.image"
+          />
+          <div class="info">
+            <span class="num">排名：1</span>
+            <span class="name">{{item.name}}</span>
+            <span class="score">票数：999</span>
+            <div @click="test" class="vote_btn">
+              <img :src="TPDefeat" alt=""> <!--未投-->
+              <!--              <img :src="TPCLick" alt=""> &lt;!&ndash;已投&ndash;&gt;-->
+            </div>
+          </div>
+        </div>
+        <div style="height: 15px"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -41,23 +43,32 @@
 import TPDefeat from '@/assets/TP_defeat.png'
 import TPCLick from '@/assets/TP_CLick.png'
 import CYDSBanner from '@/assets/about2.jpg'
+import http from '@/api/http'
+import { Api } from '@/api/api'
 
 export default {
   data () {
     return {
+      listDate: '',
       TPDefeat: TPDefeat,
       TPCLick: TPCLick,
       CYDSBanner: CYDSBanner
     }
   },
   created: function () {
+    this.getList()
   },
   methods: {
     test () {
       console.log('123')
     },
-    goDetail (type) {
-      this.$router.push({ path: `/creativityDetails/${type}` })
+    getList () {
+      http.get(Api.getActivityList + '2').then(res => {
+        this.listDate = res.data
+      })
+    },
+    goDetail (type, id) {
+      this.$router.push({ path: `/creativityDetails/${type}/${id}` })
     }
   },
   components: {}

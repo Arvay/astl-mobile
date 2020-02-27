@@ -10,6 +10,7 @@ import Ranking from 'views/home-meun/ranking/index'
 import SilkBag from 'views/home-meun/silk-bag/index'
 import SilkBagDetail from 'views/home-meun/silk-bag/base/detail'
 import Schedule from 'views/home-meun/schedule/index'
+import Checkpdf from 'views/home-meun/notebook/base/pdf-view'
 import store from '@/store'
 
 Vue.use(Router)
@@ -43,7 +44,7 @@ let routes = [
     }
   },
   {
-    path: '/creativityDetails/:type',
+    path: '/creativityDetails/:type/:id',
     name: '合规创意大赛-详情',
     component: CreativityDetails,
     meta: {
@@ -94,6 +95,14 @@ let routes = [
     path: '/ranking',
     name: '积分排名',
     component: Ranking,
+    meta: {
+      title: '积分排名'
+    }
+  },
+  {
+    path: '/checkpdf/:type',
+    name: '积分排名',
+    component: Checkpdf,
     meta: {
       title: '积分排名'
     }

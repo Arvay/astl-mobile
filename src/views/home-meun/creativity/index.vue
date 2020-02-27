@@ -6,10 +6,10 @@
     <img class="banner" :src="CYDSBanner" alt="">
     <div class="main">
       <ul class="tab">
-        <li :style="showLeft?backgroundDiv:backgroundDiv2" @click="showLeft=true">
+        <li :style="showLeft?backgroundDiv:backgroundDiv2" @click="setTabIndex(true)">
           群雄争霸
         </li>
-        <li :style="showLeft?backgroundDiv2:backgroundDiv" @click="showLeft=false">
+        <li :style="showLeft?backgroundDiv2:backgroundDiv" @click="setTabIndex(false)">
           人中豪杰
         </li>
       </ul>
@@ -31,16 +31,22 @@
 <script>
 import TabLeft from './base/tab-left'
 import TabRight from './base/tab-right'
+import store from '@/store'
+import { mapGetters } from 'vuex'
 import CYDSBanner from '@/assets/CYDS_banner.png'
 import BackImg from '@/assets/back_btn.png'
 import CYHGCheckBtn from '@/assets/CYHG_check_btn.png'
 import CYHGDefeatBtn from '@/assets/CYHG_defeat_btn.png'
-
 export default {
   name: 'areativity',
+  computed: {
+    ...mapGetters([
+      'tabIndex'
+    ])
+  },
   data () {
     return {
-      showLeft: false,
+      showLeft: true,
       CYDSBanner: CYDSBanner,
       backImg: BackImg,
       backgroundDiv: {
@@ -51,9 +57,17 @@ export default {
       }
     }
   },
+  mounted () {
+    this.showLeft = this.tabIndex
+  },
   created: function () {
   },
-  methods: {},
+  methods: {
+    setTabIndex (val) {
+      this.showLeft = val
+      store.dispatch('setTabIndex', val)
+    }
+  },
   components: {
     TabLeft, TabRight
   }

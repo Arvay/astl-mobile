@@ -35,7 +35,7 @@
       <ul class="menu">
         <li>
           <!--合规云课堂-->
-          <img src="../assets/HOME_HGYKT_icon.png" alt="">
+          <img @click="test" src="../assets/HOME_HGYKT_icon.png" alt="">
         </li>
         <li>
           <!--合规手册-->
@@ -50,20 +50,19 @@
   </div>
 </template>
 <script>
-import http from '@/api/http'
-import { Api } from '@/api/api'
+// import { mapGetters } from 'vuex'
+// import store from '@/store/'
 export default {
   name: 'FooterTabbar',
+  computed: {
+  },
   data () {
     return {}
   },
+  created () {
+  },
   methods: {
     test () {
-      let coder = 'JHfwUmZzZBYkYhaoAmbKXrWRLgZnJEuSfBr7v8Op2H0'
-      http.get(Api.getUserId + coder, res => {
-        console.log(res)
-      })
-      // window.open('https://open.weixin.qq.com/connect/oauth2/authorize?appid=ww1f0087e1de18858f&redirect_uri=astl.magical-light.com&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect')
     },
     goMeun (url) {
       this.$router.push({ path: url })

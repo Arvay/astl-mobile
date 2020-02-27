@@ -15,7 +15,12 @@
     >
       <ul class="list">
         <li>
-          <img @click="videoPlay" class="list_banner" :src="CYDSBanner" alt="">
+          <div style="position: relative">
+            <img @click="videoPlay" class="list_banner" :src="CYDSBanner" alt="">
+            <div @click="videoPlay(HGDYRBanner)" class="play_icon">
+              <img :src="BFIcon" alt="">
+            </div>
+          </div>
           <div class="info" style="text-align: left;">
             <div class="title">
               吴梦一生行走，合规为吴梦一生行走，合规为合规为合吴梦一生行走，合规为吴梦一生行走，合规为合规为合
@@ -40,6 +45,7 @@
 
 <script>
 import VideoBox from '@/components/video'
+import BFIcon from '@/assets/BF_icon.png'
 import BackImg from '@/assets/back_btn.png'
 import HGDYRBanner from '@/assets/HGDYR_banner.png'
 import LLIcon from '@/assets/LL_icon.png'
@@ -52,6 +58,7 @@ export default {
   data () {
     return {
       list: [],
+      BFIcon: BFIcon,
       loading: false,
       finished: false,
       isPlay: false,
@@ -96,6 +103,18 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+  .play_icon {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -15px;
+    margin-left: -15px;
+    img {
+      width: 100%;
+    }
+  }
   .praise {
     text-align: center;
     position: absolute;
