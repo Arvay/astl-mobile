@@ -24,7 +24,6 @@ export default {
       lineWidth: 6,
       lineColor: '#000000',
       bgColor: '',
-      resultImg: '',
       isCrop: false
     }
   },
@@ -36,15 +35,15 @@ export default {
     },
     handleGenerate () {
       this.$refs.esign.generate().then(res => {
-        console.log(res)
-        this.resultImg = res
+        this.$emit('trigger', res)
       }).catch(err => {
         // 画布没有签字时会执行这里 'Not Signned'
         console.log(err)
       })
     }
   },
-  components: {}
+  components: {
+  }
 }
 </script>
 <style scoped lang="scss">

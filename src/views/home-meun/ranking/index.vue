@@ -1,6 +1,6 @@
 <template>
   <div class="ranking">
-    <div class="back" @click="$router.back()">
+    <div class="back" @click="back()">
       <img :src="backImg" alt="">
     </div>
     <div class="banner">
@@ -11,40 +11,40 @@
             <span>我的勋章：</span>
           </li>
           <li>
-<!--            <img :src="JSPMXZicon" alt="" class="my_icon_img">-->
-            <img :src="JSPMXZ01" alt="" class="my_icon_img">
+            <img v-show="signonNum < 1" :src="JSPMXZicon" alt="" class="my_icon_img">
+            <img v-show="signonNum > 0" :src="JSPMXZ01" alt="" class="my_icon_img">
           </li>
           <li>
-<!--            <img :src="JSPMXZicon" alt="" class="my_icon_img">-->
-            <img :src="JSPMXZ02" alt="" class="my_icon_img">
+            <img v-show="signonNum < 2" :src="JSPMXZicon" alt="" class="my_icon_img">
+            <img v-show="signonNum > 1" :src="JSPMXZ02" alt="" class="my_icon_img">
           </li>
           <li>
-<!--            <img :src="JSPMXZicon" alt="" class="my_icon_img">-->
-            <img :src="JSPMXZ03" alt="" class="my_icon_img">
+            <img v-show="signonNum < 3" :src="JSPMXZicon" alt="" class="my_icon_img">
+            <img v-show="signonNum > 2" :src="JSPMXZ03" alt="" class="my_icon_img">
           </li>
           <li>
-<!--            <img :src="JSPMXZicon" alt="" class="my_icon_img">-->
-            <img :src="JSPMXZ04" alt="" class="my_icon_img">
+            <img v-show="signonNum < 4" :src="JSPMXZicon" alt="" class="my_icon_img">
+            <img v-show="signonNum > 3" :src="JSPMXZ04" alt="" class="my_icon_img">
           </li>
           <li>
-<!--            <img :src="JSPMXZicon" alt="" class="my_icon_img">-->
-            <img :src="JSPMXZ05" alt="" class="my_icon_img">
+            <img v-show="signonNum !== 5" :src="JSPMXZicon" alt="" class="my_icon_img">
+            <img v-show="signonNum === 5" :src="JSPMXZ05" alt="" class="my_icon_img">
           </li>
         </ul>
       </div>
     </div>
     <div class="content">
       <ul class="tab">
-        <li :style="showLeft?backgroundDiv:backgroundDiv2" @click="showLeft=true">
+        <li :style="showLeft?backgroundDiv:backgroundDiv2" @click="tabBtn(true)">
           日排行
         </li>
-        <li :style="showLeft?backgroundDiv2:backgroundDiv" @click="showLeft=false">
+        <li :style="showLeft?backgroundDiv2:backgroundDiv" @click="tabBtn(false)">
           总排行
         </li>
       </ul>
       <div class="user_info" :style="backgroundUser">
         <div class="left">
-          <div class="num">900</div>
+          <div class="num">{{userPointRankData.rank}}</div>
           <div class="title">排名</div>
         </div>
         <div class="center">
@@ -53,37 +53,27 @@
             fit="cover"
             width="40px"
             height="40px"
-            src="https://img.yzcdn.cn/vant/cat.jpeg"
+            :src="userPointRankData.avatar"
           />
-          <div class="name">陈威</div>
+          <div class="name">{{userPointRankData.name}}</div>
         </div>
         <div class="right">
-          <div class="num">600</div>
+          <div class="num">{{userPointRankData.point}}</div>
           <div class="title">积分</div>
         </div>
       </div>
     </div>
     <div class="list_box">
       <ul class="list">
-        <li class="van-hairline--bottom">
+        <li v-for="(item, index) in rankDayData" :key="item.id" class="van-hairline--bottom">
           <div class="list_info">
-            <img class="special" :src="JFPM01" alt="">
-            <img class="picture" src="https://img.yzcdn.cn/vant/cat.jpeg" alt="">
-            <div class="list_name">陈威</div>
+            <img v-show="index+1 < 4" class="special" :src="JFPM01" alt="">
+            <span v-show="index+1 > 3" class="special_num">{{index+1}}</span>
+            <img class="picture" :src="item.avatar" alt="">
+            <div class="list_name">{{item.name}}</div>
           </div>
           <div class="list_info_num">
-            <span>999999</span>
-            <img :src="JFIcon" alt="">
-          </div>
-        </li>
-        <li class="van-hairline--bottom">
-          <div class="list_info">
-            <span class="special_num">4</span>
-            <img class="picture" src="https://img.yzcdn.cn/vant/cat.jpeg" alt="">
-            <div class="list_name">陈威</div>
-          </div>
-          <div class="list_info_num">
-            <span>999999</span>
+            <span>{{item.pointday}}</span>
             <img :src="JFIcon" alt="">
           </div>
         </li>
@@ -108,10 +98,13 @@ import JFPMJZBg from '@/assets/JFPM_JZ_bg.png'
 import JFPMBanner from '@/assets/JFPM_banner.png'
 import CYHGCheckBtn from '@/assets/CYHG_check_btn.png'
 import CYHGDefeatBtn from '@/assets/CYHG_defeat_btn.png'
+import http from '@/api/http'
+import { Api } from '@/api/api'
 export default {
   name: 'ranking',
   data () {
     return {
+      userId: localStorage.getItem('userId'),
       JFIcon: JFIcon,
       JSPMXZ01: JSPMXZ01,
       JSPMXZ02: JSPMXZ02,
@@ -123,6 +116,10 @@ export default {
       JFPM03: JFPM03,
       JSPMXZicon: JSPMXZicon,
       showLeft: true,
+      rankDayData: '',
+      signonNum: 0,
+      pointRankData: '',
+      userPointRankData: '',
       backgroundUser: {
         backgroundImage: 'url(' + JFPMJZBg + ')'
       },
@@ -138,8 +135,51 @@ export default {
     }
   },
   created: function () {
+    this.getSignon()
+    this.getUserPointRank()
+    this.getRankDay()
   },
-  methods: {},
+  methods: {
+    tabBtn (item) {
+      this.showLeft = item
+      if (item) {
+        this.getRankDay()
+      } else {
+        this.getPointRank()
+      }
+    },
+    /* 用户排行 */
+    getUserPointRank () {
+      http.get(Api.userPointRank + this.userId).then(res => {
+        this.userPointRankData = res.data
+      })
+    },
+    /* 总排行 */
+    getPointRank () {
+      http.get(Api.pointRank).then(res => {
+        this.pointRankData = res.data
+      })
+    },
+    /* 日排行 */
+    getRankDay () {
+      http.get(Api.rankDay).then(res => {
+        this.rankDayData = res.data
+      })
+    },
+    back () {
+      if (window.history.length <= 1) {
+        this.$router.push({ path: '/' })
+        return false
+      } else {
+        this.$router.back()
+      }
+    },
+    getSignon () {
+      http.get(Api.getSignon + this.userId).then(res => {
+        this.signonNum = res.data
+      })
+    }
+  },
   components: {}
 }
 </script>

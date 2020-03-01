@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="back" @click="$router.back()">
+    <div class="back" @click="goBack">
       <img :src="backImg" alt="">
     </div>
     <div class="HGSCTop">
@@ -33,8 +33,9 @@
       </div>
     </div>
     <div class="check_view_btn">
-<!--      <img :src="HGSCCKBtn" alt="">-->
-      <img @click="show=true" :src="HGSCQZBtn2" alt="">
+      <img v-show="isCheck" @click="isPromiseImg=true" :src="HGSCCKBtn" alt="">
+      <img v-show="!show1" @click="toast()" :src="HGSCQZBtn2" alt=""> <!--少侠请确认不可点击-->
+      <img  v-show="show1" @click="showQ_z" :src="HGSCQZBtn3" alt=""> <!--少侠请确认可点击-->
     </div>
     <div class="language_tab">
       <img @click="goPdf(1)" :src="HGSCChineseBtn" alt="">
@@ -45,44 +46,140 @@
                round
                position="bottom"
                :style="{ height: '30%' }">
-      <Write></Write>
+      <Write v-on:trigger="trigger"></Write>
     </van-popup>
+    <!--承诺书-->
+    <Promise v-on:base64succeed="succeed" :base64="base64" v-show="promiseShow"></Promise>
+    <!-- 显示签署文件 -->
+    <div v-show="isPromiseImg" class="promise_box">
+      <img :src="promiseImg" alt="">
+    </div>
   </div>
 </template>
 <script>
 import Write from './base/write'
+import Promise from './base/promise'
 import HGSCTilte from '@/assets/HGSC_tilte.png'
 import BackImg from '@/assets/back_btn.png'
 import HGSCTop from '@/assets/HGSC_top_img.png'
 import HGSCCKBtn from '@/assets/HGSC_CK_btn.png' // 查看
-import HGSCQZBtn2 from '@/assets/HGSC_QZ_btn2.png' // 少侠请确认
+import HGSCQZBtn2 from '@/assets/HGSC_QZ_unuse.png' // 少侠请确认
+import HGSCQZBtn3 from '@/assets/HGSC_QZ_btn.png' // 少侠请确认
 import HGSCChineseBtn from '@/assets/HGSC_Chinese_btn.png' // 中文切换
 import HGSCEnglishBtn from '@/assets/HGSC_english_btn.png' // 英文切换
+import http from '@/api/http'
+import { Api } from '@/api/api'
+import { Toast, Notify, Dialog } from 'vant'
 export default {
   name: 'FooterTabbar',
   data () {
     return {
+      isPromiseImg: false,
+      promiseShow: false,
+      promiseImg: '',
+      isCheck: false,
+      timeOk: false,
+      base64: '',
       show: false,
+      show1: false,
       HGSCTilte: HGSCTilte,
       backImg: BackImg,
       HGSCTop: HGSCTop,
       HGSCCKBtn: HGSCCKBtn,
+      HGSCQZBtn3: HGSCQZBtn3,
       HGSCChineseBtn: HGSCChineseBtn,
       HGSCEnglishBtn: HGSCEnglishBtn,
       HGSCQZBtn2: HGSCQZBtn2
     }
   },
+  mounted () {
+    this.timeOk = localStorage.getItem('timeOk')
+    this.show1 = localStorage.getItem('show1')
+  },
+  created () {
+    this.getUserPromise()
+  },
   methods: {
+    getUserPromise () {
+      let params = {
+        userid: localStorage.getItem('userId')
+      }
+      http.post(Api.getUserPromise, params).then(res => {
+        if (res.data) {
+          this.promiseImg = res.data.image
+          this.isCheck = true
+        }
+      })
+    },
+    succeed (item) {
+      if (item.code !== 0) {
+        Notify({
+          message: '上传文件出现错误，请重新签署',
+          duration: 5000
+        })
+      } else {
+        this.isCheck = true
+      }
+    },
+    goBack () {
+      if (this.promiseShow) {
+        this.promiseShow = false
+      } else {
+        if (window.history.length <= 1) {
+          this.$router.push({ path: '/' })
+          return false
+        } else {
+          this.$router.back()
+        }
+      }
+    },
+    trigger (item) {
+      this.show = false
+      this.promiseShow = true
+      this.base64 = item
+    },
+    showQ_z () {
+      if (this.timeOk) {
+        Dialog.confirm({
+          title: '提示',
+          message: '请在签字前确认您已阅读 并理解新版合规手'
+        }).then(() => {
+          this.show = true
+        })
+      } else {
+        Toast('您需阅读合规手册大于30s')
+      }
+    },
+    toast () {
+      Toast('暂不能签字，请先阅读合规手册')
+    },
     goPdf (type) {
-      this.$router.push({ path: '/checkpdf/' + type })
+      // this.$router.push({ path: '/checkpdf/' + type })
+      setTimeout(() => {
+        this.timeOk = true
+        localStorage.setItem('timeOk', true)
+      }, 30000)
+      this.show1 = true
+      localStorage.setItem('show1', true)
     }
   },
   components: {
-    Write
+    Write,
+    Promise
   }
 }
 </script>
 <style lang="scss" scoped>
+  .promise_box {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow: scroll;
+    img {
+      width: 100%;
+    }
+  }
   .main_scrol {
     width: 300px;
     height: 380px;
@@ -166,7 +263,7 @@ export default {
     position: relative;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    /*overflow: hidden;*/
     background: url('~@/assets/home-banner.png');
     background-size: 100% 100%;
   }

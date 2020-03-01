@@ -41,53 +41,8 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
-    },
-    proxy: {
-      '/userinfo': {
-        target: 'http://47.94.146.245:11010',
-        changOrigin: true
-      },
-      '/comment': {
-        target: 'http://47.94.146.245:11010/comment',
-        ws: true,
-        changOrigin: true,
-        pathRewrite: {
-          '^/comment': '/'
-        }
-      },
-      '/user': {
-        target: 'http://47.94.146.245:11010/user',
-        ws: true,
-        changOrigin: true,
-        pathRewrite: {
-          '^/user': '/'
-        }
-      },
-      '/link': {
-        target: 'http://47.94.146.245:11010/link',
-        ws: true,
-        changOrigin: true,
-        pathRewrite: {
-          '^/link': '/'
-        }
-      },
-      '/activity': {
-        target: 'http://47.94.146.245:11010/activity',
-        ws: true,
-        changOrigin: true,
-        pathRewrite: {
-          '^/activity': '/'
-        }
-      },
-      '/vote': {
-        target: 'http://47.94.146.245:11010/vote',
-        ws: true,
-        changOrigin: true,
-        pathRewrite: {
-          '^/vote': '/'
-        }
-      }
     }
+    // proxy: {}
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

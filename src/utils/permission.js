@@ -4,7 +4,7 @@ import getPageTitle from '@/utils/get-page-title'
 import http from '@/api/http'
 import store from '@/store'
 import { Api } from '@/api/api'
-
+// department  部分
 const href = window.location.href
 let hash = window.location.href
 if (hash.indexOf('code=') > 0) {
@@ -16,20 +16,27 @@ if (localStorage.getItem('userId')) {
   userId = localStorage.getItem('userId')
 }
 router.beforeEach(async (to, from, next) => {
+  // if (IsPC()) {
+  //   Dialog.alert({
+  //     message: '请在指定企业微信中打开'
+  //   })
+  // }
   // 设置页面标题
   document.title = getPageTitle(to.meta.title)
 
   /* 判断是否是在企业微信中打开 */
-  if (href.indexOf('localhost') >= 0) {
+  if (href.indexOf(':8888') >= 0) {
     userId = 'wei.chen@magical-light.com'
-    store.dispatch('setUserId', userId)
     http.get(Api.getUserInfo + userId).then(res => {
-      // store.dispatch('setUserName', res.data.name)
-      // store.dispatch('setUserImg', res.data.avatar)
-      // store.dispatch('setUserEmail', res.data.email)
-      // localStorage.setItem('userName', res.data.name)
-      // localStorage.setItem('userEmail', res.data.email)
-      // localStorage.setItem('userImg', res.data.avatar)
+      store.dispatch('setUserName', res.data.name)
+      store.dispatch('setUserImg', res.data.avatar)
+      store.dispatch('setUserEmail', res.data.email)
+      store.dispatch('setUserId', res.data.userid)
+      localStorage.setItem('userName', res.data.name)
+      localStorage.setItem('userName', res.data.name)
+      localStorage.setItem('department', res.data.department)
+      localStorage.setItem('userImg', res.data.avatar)
+      localStorage.setItem('userId', res.data.userid)
       next()
     })
     main()
@@ -67,6 +74,7 @@ router.beforeEach(async (to, from, next) => {
               localStorage.setItem('userName', res.data.name)
               localStorage.setItem('userEmail', res.data.email)
               localStorage.setItem('userImg', res.data.avatar)
+              localStorage.setItem('department', res.data.department)
               next()
             })
           } else {
@@ -84,4 +92,18 @@ router.beforeEach(async (to, from, next) => {
       }
     }
   }
+  // function IsPC () {
+  //   var userAgentInfo = navigator.userAgent
+  //   var Agents = ['Android', 'iPhone',
+  //     'SymbianOS', 'Windows Phone',
+  //     'iPad', 'iPod']
+  //   var flag = true
+  //   for (var v = 0; v < Agents.length; v++) {
+  //     if (userAgentInfo.indexOf(Agents[v]) > 0) {
+  //       flag = false
+  //       break
+  //     }
+  //   }
+  //   return flag
+  // }
 })

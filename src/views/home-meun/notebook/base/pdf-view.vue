@@ -5,7 +5,8 @@
     </div>
     <div style="text-align: center">
       <div v-show="messageShow" class="pdfMess">加载中...</div>
-      <pdf v-for="item in numPages" :key="item" :src="pdfUrl" :page="item" />
+      <iframe class="iframe" :src="pdfUrl" scrolling="auto" frameborder="0" height="100%" width="100%"></iframe>
+<!--      <pdf v-for="item in numPages" :key="item" :src="pdfUrl" :page="item" />-->
     </div>
     <Mark v-if="showWrite" :inputText="userInfo" :inputAllowDele="true" :inputDestroy="true"></Mark>
   </div>
@@ -15,7 +16,6 @@
 import BackImg from '@/assets/back_btn.png'
 import { mapGetters } from 'vuex'
 import Mark from '@/components/waterMark'
-import pdf from 'vue-pdf'
 export default {
   computed: {
     ...mapGetters([
@@ -35,28 +35,30 @@ export default {
   },
   created: function () {
     this.userInfo = this.userName + '  ' + this.userEmail
-    this.src = pdf.createLoadingTask(this.pdfUrl)
-    this.loadPdfHandler()
   },
   methods: {
     back () {
       this.showWrite = false
-      this.$router.back()
-    },
-    loadPdfHandler () {
-      this.src.then(pdf => {
-        this.messageShow = false
-        this.numPages = pdf.numPages
-      })
+      if (window.history.length <= 1) {
+        this.$router.push({ path: '/' })
+        return false
+      } else {
+        this.$router.back()
+      }
     }
   },
   components: {
-    pdf,
     Mark
   }
 }
 </script>
 <style scoped lang="scss">
+  .iframe {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+  }
   .pdfMess {
     margin-top: 40%;
     font-size: 16px;

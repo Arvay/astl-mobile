@@ -3,7 +3,7 @@
     <van-overlay :show="true" @click="hidden">
       <div class="wrapper">
         <div class="block" @click.stop>
-          <video width="100%" height="100%" :src="url" type="application/vnd.apple.mpegurl" controls="controls" playsinline="true"
+          <video width="100%" height="100%" :src="url" :poster="img" autoplay type="application/vnd.apple.mpegurl" controls="controls" playsinline="true"
                  webkit-playsinline="true" preload x-webkit-airplay="true" x5-playsinline="">
             您的浏览器不支持Video标签。
           </video>
@@ -20,6 +20,15 @@ export default {
     url: {
       type: String,
       default: ''
+    },
+    img: {
+      typy: String,
+      default: ''
+    }
+  },
+  watch: {
+    url (item) {
+      this.url = item
     }
   },
   data () {

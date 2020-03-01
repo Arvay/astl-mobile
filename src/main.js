@@ -8,7 +8,7 @@ import 'utils/permission'
 import SvgIcon from 'components/SvgIcon'
 import '@/icons' // icon
 import '@/style/common.scss'
-import { Lazyload, Popup, Image, ImagePreview, Overlay, Field, List } from 'vant'
+import { Lazyload, Popup, Image, ImagePreview, Overlay, Field, List, Icon, Notify } from 'vant'
 import defaultSettings from '@/settings'
 import vueEsign from 'vue-esign'
 /**
@@ -34,6 +34,8 @@ Vue.use(ImagePreview)
 Vue.use(Overlay)
 Vue.use(Field)
 Vue.use(List)
+Vue.use(Icon)
+Vue.use(Notify)
 
 // options 为可选参数，无则不传
 Vue.use(Lazyload)

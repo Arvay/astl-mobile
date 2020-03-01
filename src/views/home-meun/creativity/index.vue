@@ -1,6 +1,6 @@
 <template>
   <div class="areativity_box">
-    <div class="back" @click="$router.back()">
+    <div class="back" @click="back()">
       <img :src="backImg" alt="">
     </div>
     <img class="banner" :src="CYDSBanner" alt="">
@@ -63,6 +63,14 @@ export default {
   created: function () {
   },
   methods: {
+    back () {
+      if (window.history.length <= 1) {
+        this.$router.push({ path: '/' })
+        return false
+      } else {
+        this.$router.back()
+      }
+    },
     setTabIndex (val) {
       this.showLeft = val
       store.dispatch('setTabIndex', val)

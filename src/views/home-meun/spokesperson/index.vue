@@ -1,45 +1,43 @@
 <template>
   <div class="spokesperson_box">
-    <div class="back" @click="$router.back()">
+    <div class="back" v-show="!isPlay" @click="back">
       <img :src="backImg" alt="">
     </div>
     <div class="banner">
       <img :src="HGDYRBanner" alt="">
     </div>
-    <!--上拉加载-->
-    <van-list
-      v-model="loading"
-      :finished="finished"
-      finished-text="没有更多了"
-      @load="onLoad"
-    >
-      <ul class="list">
-        <li>
-          <div style="position: relative">
-            <img @click="videoPlay" class="list_banner" :src="CYDSBanner" alt="">
-            <div @click="videoPlay(HGDYRBanner)" class="play_icon">
-              <img :src="BFIcon" alt="">
-            </div>
+    <ul class="list">
+      <li v-for="item in dataList" :key="item.id">
+        <div style="position: relative">
+          <van-image
+            @click="videoPlay(item.title, item.image, item.id)"
+            width="100%"
+            height="194px"
+            fit="cover"
+            :src="item.image"
+          />
+          <div @click="videoPlay(item.title, item.image, item.id)" class="play_icon">
+            <img :src="BFIcon" alt="">
           </div>
-          <div class="info" style="text-align: left;">
-            <div class="title">
-              吴梦一生行走，合规为吴梦一生行走，合规为合规为合吴梦一生行走，合规为吴梦一生行走，合规为合规为合
-            </div>
-            <div class="num">
-              <img :src="LLIcon" alt="">
-              观看：1000
-            </div>
-            <div class="praise">
-              <img :src="DZDefeat" alt=""> <!--未点赞-->
-              <!--            <img :src="DZClick" alt=""> &lt;!&ndash;已点赞&ndash;&gt;-->
-              <div>33</div>
-            </div>
+        </div>
+        <div class="info" style="text-align: left;">
+          <div class="title">
+            {{item.content}}
           </div>
-        </li>
-      </ul>
-    </van-list>
+          <div class="num">
+            <img :src="LLIcon" alt="">
+            观看：{{item.lookcount}}
+          </div>
+          <div class="praise">
+            <img v-show="item.limit===0" @click="setLike(item.id)" :src="DZDefeat" alt=""> <!--未点赞-->
+            <img v-show="item.limit===1" :src="DZClick" alt=""> <!--已点赞-->
+            <div>{{item.likecount}}</div>
+          </div>
+        </div>
+      </li>
+    </ul>
     <!--播放器-->
-    <VideoBox v-if="isPlay" v-on:change="videoStates"></VideoBox>
+    <VideoBox v-if="isPlay" :img="videoImg" :url="videoUrl" v-on:change="videoStates"></VideoBox>
   </div>
 </template>
 
@@ -52,12 +50,19 @@ import LLIcon from '@/assets/LL_icon.png'
 import DZClick from '@/assets/DZ_click.png'
 import DZDefeat from '@/assets/DZ_defeat.png'
 import CYDSBanner from '@/assets/about2.jpg'
+import http from '@/api/http'
+import { Api } from '@/api/api'
+import { mapGetters } from 'vuex'
+import { Notify, Toast } from 'vant'
 
 export default {
   name: 'spokesperson',
   data () {
     return {
+      videoImg: '',
+      videoUrl: '',
       list: [],
+      dataList: '',
       BFIcon: BFIcon,
       loading: false,
       finished: false,
@@ -70,34 +75,57 @@ export default {
       LLIcon: LLIcon
     }
   },
+  computed: {
+    ...mapGetters([
+      'userId'
+    ])
+  },
   created: function () {
+    this.getData()
   },
   methods: {
-    onLoad () {
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1)
+    back () {
+      if (window.history.length <= 1) {
+        this.$router.push({ path: '/' })
+        return false
+      } else {
+        this.$router.back()
+      }
+    },
+    setLike (id) {
+      let params = {
+        id: id,
+        type: 3,
+        userid: this.userId
+      }
+      http.post(Api.activityLike, params).then(res => {
+        if (res.code === 0) {
+          this.getData()
+          Toast('成功点赞')
+        } else {
+          Toast(res.message)
         }
-
-        // 加载状态结束
-        this.loading = false
-
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true
-        }
-      }, 1000)
+      })
+    },
+    getData () {
+      let user = localStorage.getItem('userId')
+      http.get(Api.getActivityList + `3/${user}`).then(res => {
+        this.dataList = res.data
+      })
     },
     videoStates (item) {
       this.isPlay = false
     },
-    videoPlay () {
+    videoPlay (item, img, id) {
+      this.videoUrl = item
+      this.videoImg = img
       this.isPlay = true
+      http.get(Api.getActivityDetail + id)
     }
   },
   components: {
+    [Notify.name]: Notify,
+    [Toast.name]: Toast,
     VideoBox
   }
 }

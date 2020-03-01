@@ -1,57 +1,68 @@
 <template>
   <div class="silkbag_box">
-    <div class="back" @click="$router.back()">
+    <div class="back" @click="back()">
       <img :src="backImg" alt="">
     </div>
-    <div style="height: 48px"></div>
-    <div class="content">
-      <div class="title">诺行合一 | 2020年合规周 | 征集令</div>
-      <div class="message">、以Business owns compliance为主题，形式不限，可以是随笔、微型小说（500字以内）、诗歌、剧本，歌曲改编，手绘、漫画、摄影作品（1M以上）等等
-        p.s. 以图片为主体的稿件，需要配上简短的文字哦～</div>
+    <div class="iframe_box">
+      <iframe class="iframe_2" ref="scrollRef" name="menuFrame" :src="iframeUrl" id="menuFrame" style="overflow:visible;"
+              scrolling="auto" frameborder="0" height="100%" width="100%">
+      </iframe>
     </div>
-    <div class="zw"></div>
-    <div class="comment_box">
-      <div class="comment_header">
-        <span>全部留言</span>
-        <span @click="popupShow">写留言</span>
+    <div @click="messageShow=true" class="check_message">
+      查看评论
+    </div>
+    <transition name="van-slide-up">
+      <div v-show="messageShow" class="message_box">
+        <div class="zw">
+        </div>
+        <div class="comment_box">
+          <div class="comment_header">
+            <span @click="messageShow=false"><van-icon size="0.5rem" name="cross" /></span>
+            <span @click="popupShow">写留言</span>
+          </div>
+          <div @scroll="scroll" @touchend="touchend" id="scroll_id" class="scrol_box">
+            <ul>
+              <li v-for="(item, index) in contentData" :key="item.id" class="comment_list">
+                <div class="user_icon">
+                  <img :src="item.avatar" alt="">
+                </div>
+                <div class="user_info">
+                  <div class="user_info_top">
+                    <div class="user_info_top_name">{{item.name}}</div>
+                    <div class="user_info_top_num">
+                      <span>{{item.likecount}}</span>
+                      <img @click="zanBtn(index, item.id)" v-show="!item.limit" :src="DZDefeat" alt="">
+                      <img @click="noZanBtn" v-show="item.limit" :src="DZClick" alt="">
+                    </div>
+                  </div>
+                  <div class="user_info_bot">
+                    <span>{{item.content}}</span>
+                    <span style="color: #ffffff">占，位不要删除我投票手，希望大家多，爱你们～</span>
+                  </div>
+                </div>
+              </li>
+              <li style="height: 80px"></li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <ul>
-        <li class="comment_list">
-          <div class="user_icon">
-            <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="">
-          </div>
-          <div class="user_info">
-            <div class="user_info_top">
-              <div class="user_info_top_name">陈威</div>
-              <div class="user_info_top_num">
-<!--                <img :src="DZDefeat" alt="">-->
-                <img :src="DZClick" alt="">
-                <span>566</span>
-              </div>
-            </div>
-            <div class="user_info_bot">
-              <span>2020年合规周的节目策划真的太有心了，我参与了《合规创意大赛》，编号004选手，希望大家多给我投票，爱你们～</span>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
+    </transition>
+
     <!--留言-->
-    <van-popup v-model="show"
-               @close="popupClose"
-               round
-               position="bottom"
-               :style="{ height: '30%' }">
+    <div class="my-container" v-if="show">
+    </div>
+    <van-popup round position="bottom" v-model="show" :get-container="getContainer">
       <div>
         <div class="popup_header">
           <div class="popup_back">
             <img @click="popupHidden" :src="BackBtn" alt="">
           </div>
           <span class="popup_name">写留言</span>
-          <span class="popup_create">提交</span>
+          <span @click="saveComment" class="popup_create">提交</span>
         </div>
       </div>
       <van-field
+        v-if="show"
         v-model="message"
         rows="5"
         :autosize="{ maxHeight: 100, minHeight: 50 }"
@@ -64,17 +75,28 @@
     </div>
   </div>
 </template>
-
 <script>
 import BackImg from '@/assets/back_btn.png'
 import BackBtn from '@/assets/back_btn03.png'
 import DZDefeat from '@/assets/DZ_defeat_03.png'
 import DZClick from '@/assets/DZ_click_03.png'
+import http from '@/api/http'
+import { Api } from '@/api/api'
+import { mapGetters } from 'vuex'
+import { Notify, Toast } from 'vant'
+
 export default {
   name: 'silk_bag',
   data () {
     return {
+      pageNumber: 0,
+      totalPages: 1,
+      contentData: [],
+      messageShow: false,
+      iframeUrl: 'https://open.work.weixin.qq.com/wwopen/mpnews?mixuin=0IE9DQAABwDYNaQQAAAUAA&mfid=WW0328-QXE5zwAABwDxzbjEyzrvmgKfse542&idx=0&sn=3ee10cb919067e1ad6ebb8b160635165',
       message: '',
+      box: '',
+      pos: '',
       BackBtn: BackBtn,
       show: false,
       backImg: BackImg,
@@ -82,24 +104,185 @@ export default {
       DZClick: DZClick
     }
   },
+  computed: {
+    ...mapGetters([
+      'userId'
+    ])
+  },
+  mounted () {
+    this.$nextTick(() => {
+      // 进入nexTick
+      var bady = document.getElementById('scroll_id')
+      bady.onscroll = () => {
+        // 获取距离顶部的距离
+        var scrollTop = bady.scrollTop
+        // 获取可视区的高度
+        var windowHeight = bady.clientHeight
+        // 获取滚动条的总高度
+        var scrollHeight = bady.scrollHeight
+        // console.log('距顶部' + scrollTop + '可视区高度' + windowHeight + '滚动条总高度' + scrollHeight)
+        if (scrollTop + windowHeight >= scrollHeight) {
+          // 把距离顶部的距离加上可视区域的高度 等于或者大于滚动条的总高度就是到达底部
+          if (this.pageNumber < this.totalPages) {
+            this.pageNumber += 1
+          } else {
+            Toast('到底啦')
+            return
+          }
+          this.getData()
+        }
+      }
+    })
+  },
   created: function () {
+    this.getData()
+    this.getActivityInfo()
   },
   methods: {
-    popupClose () {
-      this.message = ''
+    noZanBtn () {
+      Toast('您已经为此评论点过赞了')
+    },
+    back () {
+      if (window.history.length <= 1) {
+        this.$router.push({ path: '/' })
+        return false
+      } else {
+        this.$router.back()
+      }
+    },
+    zanBtn (index, id) {
+      let params = {
+        id: id,
+        userid: this.userId
+      }
+      http.post(Api.commentLike, params).then(res => {
+        if (res.code === 0) {
+          this.contentData[index].likecount += 1
+          this.contentData[index].limit = 1
+          Toast('点赞成功')
+        } else {
+          Toast(res.message)
+        }
+      })
+    },
+    getContainer () {
+      return document.querySelector('.my-container')
+    },
+    touchend () {
+      if (this.pos === 0) {
+        this.messageShow = false
+      }
+    },
+    goUnder () {
+      this.$nextTick(() => {
+        let msg = document.getElementById('scroll_id') // 获取对象
+        msg.scrollTop = msg.scrollHeight // 滚动高度
+      })
+    },
+    scroll (event) {
+      // let msg = document.getElementById('scroll_id') // 获取对象
+      this.pos = event.target.scrollTop
+    },
+    /*
+    * 发表评论
+    * */
+    saveComment () {
+      this.popupHidden()
+      if (this.message === '') {
+        Toast('请输入留言')
+        return
+      }
+      let params = {
+        activityid: this.$route.params.id,
+        content: this.message,
+        userid: this.userId
+      }
+      http.post(Api.saveComment, params).then(res => {
+        if (res.code === 0) {
+          // this.show = false
+          this.popupHidden()
+          Toast('留言成功')
+          this.message = ''
+          this.getData(1)
+          this.goUnder()
+        } else {
+          Notify(res.message)
+        }
+        // this.contentData = res.data.content
+      })
+    },
+    getActivityInfo () {
+      let id = this.$route.params.id
+      http.get(Api.getActivityDetail + id).then(res => {
+        this.iframeUrl = res.data.name
+      })
+    },
+    getData (type) {
+      let user = localStorage.getItem('userId')
+      let id = this.$route.params.id
+      let params = {
+        pageNumber: this.pageNumber,
+        pageSize: 10,
+        userid: user
+      }
+      http.post(Api.getCommentList + `${id}/${user}`, params).then(res => {
+        this.totalPages = res.data.totalPages - 1
+        if (type === 1) {
+          this.unique(res.data.content)
+          return
+        }
+        for (var x of res.data.content) {
+          this.contentData.push(x)
+        }
+      })
+    },
+    unique (arr) {
+      let x = this.contentData
+      let y = arr
+      for (var k of y) {
+        x.push(k)
+      }
+      const res = new Map()
+      this.contentData = x.filter((x) => !res.has(x.id) && res.set(x.id, 1))
     },
     popupShow () {
       this.show = true
     },
     popupHidden () {
       this.show = false
-      this.message = ''
     }
   },
-  components: {}
+  components: {
+    [Toast.name]: Toast
+  }
 }
 </script>
 <style scoped lang="scss">
+  .my-container {
+    width: 100%;
+  }
+  .scrol_box {
+    position: absolute;
+    top: 40px;
+    bottom: 0;
+    overflow: scroll;
+  }
+  .check_message {
+    padding: 20px;
+    font-size: 16px;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 2;
+    color: ffffff;
+    background: #306eff;
+  }
+  .iframe_box {
+    width: 100%;
+    position: fixed;
+    top: 20px;
+    bottom: 0;
+  }
   .popup_header {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -152,7 +335,7 @@ export default {
       align-content: center;
       justify-content: flex-end;
       img {
-        margin-right: 5px;
+        margin-left: 5px;
         width: 16px;
         height: 16px;
       }
@@ -166,7 +349,10 @@ export default {
     }
   }
   .comment_list {
-    margin-bottom: 20px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-right: 10px;
     display: flex;
     justify-content: space-between;
     .user_icon {
@@ -183,9 +369,20 @@ export default {
       width: 100%;
     }
   }
+  .message_box {
+    height: 70%;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    z-index: 9;
+    background: #ffffff;
+  }
   .comment_box {
+    position: relative;
+    height: 100%;
     .comment_header {
-      margin-bottom: 30px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       span {
@@ -200,7 +397,7 @@ export default {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    padding: 20px 10px;
+    padding: 10px 10px;
   }
   .silkbag_box {
     background: #ffffff;

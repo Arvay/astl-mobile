@@ -1,6 +1,6 @@
 <template>
   <div class="silkbag_box">
-    <div class="back" @click="$router.back()">
+    <div class="back" @click="back()">
       <img :src="backImg" alt="">
     </div>
     <div class="banner">
@@ -8,10 +8,10 @@
     </div>
     <div class="content">
       <ul>
-        <li @click="goDetail">
-          <div class="time">2020年3月15日</div>
-          <img :src="HGJNBanner" alt="">
-          <div class="title">2020年合规周紧锣密鼓筹备后，闪亮登场！大家勇于参与！</div>
+        <li v-for="item in dataList" :key="item.id" @click="goDetail(item.id)">
+          <div class="time">{{item.content}}</div>
+          <img :src="item.image" alt="">
+          <div class="title">{{item.title}}</div>
         </li>
       </ul>
     </div>
@@ -21,19 +21,43 @@
 <script>
 import BackImg from '@/assets/back_btn.png'
 import HGJNBanner from '@/assets/HGJN_banner.png'
+import http from '@/api/http'
+import { Api } from '@/api/api'
+import { mapGetters } from 'vuex'
 export default {
   name: 'silk_bag',
   data () {
     return {
+      dataList: '',
       HGJNBanner: HGJNBanner,
       backImg: BackImg
     }
   },
+  computed: {
+    ...mapGetters([
+      'userId'
+    ])
+  },
   created: function () {
+    this.getData()
   },
   methods: {
-    goDetail () {
-      this.$router.push({ path: '/giftBagDetail/1' })
+    back () {
+      if (window.history.length <= 1) {
+        this.$router.push({ path: '/' })
+        return false
+      } else {
+        this.$router.back()
+      }
+    },
+    getData () {
+      let user = localStorage.getItem('userId')
+      http.get(Api.getActivityList + `5/${user}`).then(res => {
+        this.dataList = res.data
+      })
+    },
+    goDetail (id) {
+      this.$router.push({ path: '/giftBagDetail/' + id })
     }
   },
   components: {}

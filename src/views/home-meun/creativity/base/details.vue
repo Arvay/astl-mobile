@@ -1,6 +1,6 @@
 <template>
   <div class="details_box">
-    <div class="back" @click="$router.back()">
+    <div class="back" @click="back()">
       <img :src="backImg" alt="">
     </div>
     <div style="height: 50px"></div>
@@ -51,6 +51,14 @@ export default {
     this.getInfo()
   },
   methods: {
+    back () {
+      if (window.history.length <= 1) {
+        this.$router.push({ path: '/' })
+        return false
+      } else {
+        this.$router.back()
+      }
+    },
     getInfo () {
       let id = this.$route.params.id
       http.get(Api.getActivityDetail + id).then(res => {

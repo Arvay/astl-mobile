@@ -15,7 +15,7 @@
         </li>
         <li>
           <!--闯关答题-->
-          <img src="../assets/HOME_CGDT_icon.png" alt="">
+          <img @click="goMeun('game')" src="../assets/HOME_CGDT_icon.png" alt="">
         </li>
       </ul>
       <ul class="menu">
@@ -50,11 +50,16 @@
   </div>
 </template>
 <script>
-// import { mapGetters } from 'vuex'
-// import store from '@/store/'
+import { mapGetters } from 'vuex'
+import http from '@/api/http'
+import { Api } from '@/api/api'
+import { Toast } from 'vant'
 export default {
   name: 'FooterTabbar',
   computed: {
+    ...mapGetters([
+      'userId'
+    ])
   },
   data () {
     return {}
@@ -63,8 +68,18 @@ export default {
   },
   methods: {
     test () {
+      Toast('功能暂未开放')
+    },
+    saveSignon () {
+      http.post(Api.saveSignon, { userid: this.userId })
     },
     goMeun (url) {
+      if (url === '/giftbag') {
+        this.saveSignon()
+      } else if (url === 'game') {
+        http.get(Api.game + this.userId)
+        return
+      }
       this.$router.push({ path: url })
     }
   },

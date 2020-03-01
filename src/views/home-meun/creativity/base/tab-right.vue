@@ -9,8 +9,8 @@
             <span class="name">{{item.name}}</span>
             <span class="name score">票数：111111</span>
           </div>
-          <div @click.stop="test" class="vote_btn">
-            <img :src="TPDefeat" alt=""> <!--未投-->
+          <div class="vote_btn">
+            <img @click.stop="setVote(item.id)" :src="TPDefeat" alt=""> <!--未投-->
             <!--              <img :src="TPCLick" alt=""> &lt;!&ndash;已投&ndash;&gt;-->
           </div>
         </div>
@@ -26,10 +26,10 @@
           <div class="info">
             <span class="num">排名：1</span>
             <span class="name">{{item.name}}</span>
-            <span class="score">票数：999</span>
-            <div @click="test" class="vote_btn">
-              <img :src="TPDefeat" alt=""> <!--未投-->
-              <!--              <img :src="TPCLick" alt=""> &lt;!&ndash;已投&ndash;&gt;-->
+            <span class="score">票数：{{item.votecount}}</span>
+            <div class="vote_btn">
+              <img v-show="item.limit2===0" @click.stop="setVote(item.id)" :src="TPDefeat" alt=""> <!--未投-->
+              <img v-show="item.limit2===1" :src="TPCLick" alt=""> <!--已投-->
             </div>
           </div>
         </div>
@@ -45,6 +45,8 @@ import TPCLick from '@/assets/TP_CLick.png'
 import CYDSBanner from '@/assets/about2.jpg'
 import http from '@/api/http'
 import { Api } from '@/api/api'
+import { Toast } from 'vant'
+import { mapGetters } from 'vuex'
 
 export default {
   data () {
@@ -55,15 +57,35 @@ export default {
       CYDSBanner: CYDSBanner
     }
   },
+  computed: {
+    ...mapGetters([
+      'userId'
+    ])
+  },
   created: function () {
     this.getList()
   },
   methods: {
+    setVote (id) {
+      this.showBtn = true
+      let params = {
+        id: id,
+        userid: this.userId
+      }
+      http.post(Api.vote, params).then(res => {
+        if (res.code === 0) {
+          Toast('投票成功')
+          this.getList()
+        } else {
+          Toast(res.message)
+        }
+      })
+    },
     test () {
-      console.log('123')
     },
     getList () {
-      http.get(Api.getActivityList + '2').then(res => {
+      let user = localStorage.getItem('userId')
+      http.get(Api.getActivityList + `2/${user}`).then(res => {
         this.listDate = res.data
       })
     },
