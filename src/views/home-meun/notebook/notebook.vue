@@ -34,8 +34,8 @@
     </div>
     <div class="check_view_btn">
       <img v-show="isCheck" @click="isPromiseImg=true" :src="HGSCCKBtn" alt="">
-      <img v-show="!show1" @click="toast()" :src="HGSCQZBtn2" alt=""> <!--少侠请确认不可点击-->
-      <img  v-show="show1" @click="showQ_z" :src="HGSCQZBtn3" alt=""> <!--少侠请确认可点击-->
+      <img v-show="!show1 && !isCheck" @click="toast()" :src="HGSCQZBtn2" alt=""> <!--少侠请确认不可点击-->
+      <img v-show="show1 && !isCheck" @click="showQ_z" :src="HGSCQZBtn3" alt=""> <!--少侠请确认可点击-->
     </div>
     <div class="language_tab">
       <img @click="goPdf(1)" :src="HGSCChineseBtn" alt="">
@@ -124,6 +124,8 @@ export default {
     goBack () {
       if (this.promiseShow) {
         this.promiseShow = false
+      } else if (this.isPromiseImg) {
+        this.isPromiseImg = false
       } else {
         if (window.history.length <= 1) {
           this.$router.push({ path: '/' })
@@ -154,7 +156,7 @@ export default {
       Toast('暂不能签字，请先阅读合规手册')
     },
     goPdf (type) {
-      // this.$router.push({ path: '/checkpdf/' + type })
+      this.$router.push({ path: '/checkpdf/' + type })
       setTimeout(() => {
         this.timeOk = true
         localStorage.setItem('timeOk', true)

@@ -26,9 +26,9 @@ export default {
   },
   data () {
     return {
-      jobNum: '员工号',
+      jobNum: localStorage.getItem('astlcode') === 'undefined' ? '' : localStorage.getItem('astlcode'),
       systemDate: '',
-      department: localStorage.getItem('department'),
+      department: localStorage.getItem('department') === 'undefined' ? '' : localStorage.getItem('department'),
       userEmail: localStorage.getItem('userEmail'),
       htmlUrl: '',
       global: {
@@ -108,7 +108,7 @@ export default {
   .jobNum_box {
     position: absolute;
     bottom: 120px;
-    right: 80px;
+    right: 50px;
   }
   .department_box {
     position: absolute;

@@ -33,10 +33,11 @@ router.beforeEach(async (to, from, next) => {
       store.dispatch('setUserEmail', res.data.email)
       store.dispatch('setUserId', res.data.userid)
       localStorage.setItem('userName', res.data.name)
-      localStorage.setItem('userName', res.data.name)
+      localStorage.setItem('userEmail', res.data.email)
       localStorage.setItem('department', res.data.department)
       localStorage.setItem('userImg', res.data.avatar)
       localStorage.setItem('userId', res.data.userid)
+      localStorage.setItem('astlcode', res.data.astlcode)
       next()
     })
     main()
@@ -75,16 +76,17 @@ router.beforeEach(async (to, from, next) => {
               localStorage.setItem('userEmail', res.data.email)
               localStorage.setItem('userImg', res.data.avatar)
               localStorage.setItem('department', res.data.department)
+              localStorage.setItem('astlcode', res.data.astlcode)
               next()
             })
           } else {
             Dialog.alert({
-              message: '请在指定企业微信中打开'
+              message: '请在指定企业微信中打开--' + 'code:' + res.code
             })
           }
-        }).catch(() => {
+        }).catch(error => {
           Dialog.alert({
-            message: '请在指定企业微信中打开'
+            message: '请在指定企业微信中打开--' + 'code:' + error.code
           })
         })
       } else {
@@ -92,6 +94,7 @@ router.beforeEach(async (to, from, next) => {
       }
     }
   }
+
   // function IsPC () {
   //   var userAgentInfo = navigator.userAgent
   //   var Agents = ['Android', 'iPhone',
