@@ -9,7 +9,7 @@
       </iframe>
     </div>
     <div @click="messageShow=true" class="check_message">
-      查看评论
+      <img :src="HGJNPL" alt="">
     </div>
     <transition name="van-slide-up">
       <div v-show="messageShow" class="message_box">
@@ -80,6 +80,7 @@ import BackImg from '@/assets/back_btn.png'
 import BackBtn from '@/assets/back_btn03.png'
 import DZDefeat from '@/assets/DZ_defeat_03.png'
 import DZClick from '@/assets/DZ_click_03.png'
+import HGJNPL from '@/assets/HGJN_PL.png'
 import http from '@/api/http'
 import { Api } from '@/api/api'
 import { mapGetters } from 'vuex'
@@ -89,6 +90,7 @@ export default {
   name: 'silk_bag',
   data () {
     return {
+      HGJNPL: HGJNPL,
       pageNumber: 0,
       totalPages: 1,
       contentData: [],
@@ -268,14 +270,15 @@ export default {
     overflow: scroll;
   }
   .check_message {
-    padding: 20px;
+    width: 94px;
     font-size: 16px;
     position: fixed;
     bottom: 10px;
-    right: 10px;
+    right: 0px;
     z-index: 2;
-    color: ffffff;
-    background: #306eff;
+    img {
+      width: 100%;
+    }
   }
   .iframe_box {
     width: 100%;
