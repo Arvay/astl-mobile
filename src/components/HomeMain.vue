@@ -35,7 +35,7 @@
       <ul class="menu">
         <li>
           <!--合规云课堂-->
-          <img @click="test" src="../assets/HOME_HGYKT_icon.png" alt="">
+          <img @click="goMeun('/spokesperson/2')" src="../assets/HOME_HGYKT_icon.png" alt="">
         </li>
         <li>
           <!--合规手册-->

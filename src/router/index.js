@@ -52,7 +52,7 @@ let routes = [
     }
   },
   {
-    path: '/spokesperson',
+    path: '/spokesperson/:type?',
     name: '合规代言人',
     component: Spokesperson,
     meta: {

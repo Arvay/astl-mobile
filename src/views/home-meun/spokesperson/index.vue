@@ -4,7 +4,8 @@
       <img :src="backImg" alt="">
     </div>
     <div class="banner">
-      <img :src="HGDYRBanner" alt="">
+      <img v-show="!pageType" :src="HGDYRBanner" alt="">
+      <img v-show="pageType === '2'" :src="HGYKTBanner" alt="">
     </div>
     <ul class="list">
       <li v-for="item in dataList" :key="item.id">
@@ -28,7 +29,7 @@
             <img :src="LLIcon" alt="">
             观看：{{item.lookcount}}
           </div>
-          <div class="praise">
+          <div v-show="pageType !== '2'" class="praise">
             <img v-show="item.limit===0" @click="setLike(item.id)" :src="DZDefeat" alt=""> <!--未点赞-->
             <img v-show="item.limit===1" :src="DZClick" alt=""> <!--已点赞-->
             <div>{{item.likecount}}</div>
@@ -43,6 +44,7 @@
 
 <script>
 import VideoBox from '@/components/video'
+import HGYKTBanner from '@/assets/HGYKT_banner.png'
 import BFIcon from '@/assets/BF_icon.png'
 import BackImg from '@/assets/back_btn.png'
 import HGDYRBanner from '@/assets/HGDYR_banner.png'
@@ -59,11 +61,13 @@ export default {
   name: 'spokesperson',
   data () {
     return {
+      pageType: this.$route.params.type,
       videoImg: '',
       videoUrl: '',
       list: [],
       dataList: '',
       BFIcon: BFIcon,
+      HGYKTBanner: HGYKTBanner,
       loading: false,
       finished: false,
       isPlay: false,
@@ -109,12 +113,17 @@ export default {
     },
     getData () {
       let user = localStorage.getItem('userId')
-      http.get(Api.getActivityList + `3/${user}`).then(res => {
+      let type = 3
+      if (this.pageType === '2') {
+        type = 7
+      }
+      http.get(Api.getActivityList + `${type}/${user}`).then(res => {
         this.dataList = res.data
       })
     },
     videoStates (item) {
       this.isPlay = false
+      this.getData()
     },
     videoPlay (item, img, id) {
       this.videoUrl = item
