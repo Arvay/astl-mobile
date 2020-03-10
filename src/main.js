@@ -47,11 +47,11 @@ if (process.env.NODE_ENV === 'development' && defaultSettings.vconsole) {
   // eslint-disable-next-line
   // const my_console = new VConsole()
 }
-let href = window.location.href
-if (href.indexOf('localhost') < 0) {
-  const VConsole = require('vconsole')
-  const my_console = new VConsole()
-}
+// let href = window.location.href
+// if (href.indexOf('localhost') < 0) {
+//   const VConsole = require('vconsole')
+//   const my_console = new VConsole()
+// }
 
 Vue.config.productionTip = false
 

@@ -14,7 +14,7 @@ service.interceptors.response.use(
     return result
   },
   error => {
-    alert(error)
+    console.log(error)
     return error
   }
 )

@@ -35,10 +35,16 @@
     </div>
     <div class="content">
       <ul class="tab">
-        <li :style="showLeft?backgroundDiv:backgroundDiv2" @click="tabBtn(true)">
+        <li v-show="showLeft" :style="backgroundDiv" @click="tabBtn(true)">
           日排行
         </li>
-        <li :style="showLeft?backgroundDiv2:backgroundDiv" @click="tabBtn(false)">
+        <li v-show="!showLeft" :style="backgroundDiv2" @click="tabBtn(true)">
+          日排行
+        </li>
+        <li v-show="showLeft" :style="backgroundDiv2" @click="tabBtn(false)">
+          总排行
+        </li>
+        <li v-show="!showLeft" :style="backgroundDiv" @click="tabBtn(false)">
           总排行
         </li>
       </ul>
@@ -73,7 +79,8 @@
             <div class="list_name">{{item.name}}</div>
           </div>
           <div class="list_info_num">
-            <span>{{item.pointday}}</span>
+            <span v-show="showLeft">{{item.pointday}}</span>
+            <span v-show="!showLeft">{{item.point}}</span>
             <img :src="JFIcon" alt="">
           </div>
         </li>
@@ -157,7 +164,7 @@ export default {
     /* 总排行 */
     getPointRank () {
       http.get(Api.pointRank).then(res => {
-        this.pointRankData = res.data
+        this.rankDayData = res.data
       })
     },
     /* 日排行 */

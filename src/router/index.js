@@ -11,6 +11,7 @@ import SilkBag from 'views/home-meun/silk-bag/index'
 import SilkBagDetail from 'views/home-meun/silk-bag/base/detail'
 import Schedule from 'views/home-meun/schedule/index'
 import Checkpdf from 'views/home-meun/notebook/base/pdf-view'
+import Game from 'views/home-meun/game/index'
 import store from '@/store'
 
 Vue.use(Router)
@@ -105,6 +106,14 @@ let routes = [
     component: Checkpdf,
     meta: {
       title: '积分排名'
+    }
+  },
+  {
+    path: '/game',
+    name: '合规小游戏',
+    component: Game,
+    meta: {
+      title: '合规小游戏'
     }
   },
   {

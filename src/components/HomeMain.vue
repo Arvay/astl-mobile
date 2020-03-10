@@ -58,7 +58,9 @@ export default {
   name: 'FooterTabbar',
   computed: {
     ...mapGetters([
-      'userId'
+      'userId',
+      'userName',
+      'userImg'
     ])
   },
   data () {
@@ -78,6 +80,11 @@ export default {
         this.saveSignon()
       } else if (url === 'game') {
         http.get(Api.game + this.userId)
+        if (!this.userId || !this.userName || !this.userImg) {
+          Toast('获取用户信息错误')
+        }
+        // console.log(`http://dt.wayhuh5.top/qywxkupaodati_kh_alk/index.php/index/index/index.html?username=${this.userName}&wxid=${this.userId}&headimgurl=${this.userImg}`)
+        window.location.replace(`http://dt.wayhuh5.top/qywxkupaodati_kh_alk/index.php/index/index/middlepage?username=${this.userName}&wxid=${this.userId}&headimgurl=${this.userImg}`)
         return
       }
       this.$router.push({ path: url })
