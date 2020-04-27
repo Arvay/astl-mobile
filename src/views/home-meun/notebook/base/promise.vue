@@ -1,13 +1,15 @@
 <template>
   <div class="promise_box">
+    <scroller>
     <div ref="imageTofile" class="promise">
-      <img @click="cilc" class="backgroundImg" :src="CHENGNUO" alt="">
+      <img class="backgroundImg" :src="CHENGNUO" alt="">
       <img id="newImg" class="name" :src="base64" alt="">
       <div class="email_box">{{userEmail}}</div>
       <div class="time_box">{{systemDate}}</div>
       <div class="department_box">{{department}}</div>
       <div class="jobNum_box">{{jobNum}}</div>
     </div>
+    </scroller>
   </div>
 </template>
 
@@ -40,8 +42,10 @@ export default {
   watch: {
     base64 () {
       setTimeout(() => {
-        this.toImage()
-      }, 1000)
+        var imgs = new Image()
+        imgs.src = this.CHENGNUO
+        imgs.onload = this.toImage()
+      }, 3000)
     }
   },
   created: function () {
@@ -60,14 +64,14 @@ export default {
 
         var blob = this.getBlob(canvas)
         var oMyForm = new FormData()
-        var fileName = 'mobile' + '.jpg'
+        var fileName = this.userEmail + '.jpg'
         oMyForm.append('file', blob, fileName)
         oMyForm.append('fileType', 'image')
         http.post(Api.uploadFile, oMyForm).then(res => {
           let params = {
             type: 6,
             name: localStorage.getItem('userName'),
-            userid: localStorage.getItem('userId'),
+            userid: localStorage.getItem('userId2'),
             image: res.data
           }
           http.post(Api.saveActivity, params).then(res => {
@@ -95,10 +99,10 @@ export default {
         month: nowDate.getMonth() + 1,
         date: nowDate.getDate()
       }
-      this.systemDate = date.year + '.' + 0 + date.month + '.' + 0 + date.date
+      this.systemDate = date.year + '.' + date.month + '.' + date.date
     },
     cilc () {
-      this.toImage()
+      // this.toImage()
     }
   },
   components: {}
@@ -113,7 +117,7 @@ export default {
   .department_box {
     position: absolute;
     bottom: 84px;
-    left: 100px;
+    left: 80px;
   }
   .email_box {
     word-break: break-all;
@@ -139,12 +143,7 @@ export default {
     width: 100px;
   }
   .promise_box {
-    position: fixed;
-    overflow: scroll;
-    top: 0;
-    bottom: 0;
-    width: 100%;
-    left: 0;
+    overflow: hidden;
     background: #ffffff;
     .backgroundImg {
       width: 100%;

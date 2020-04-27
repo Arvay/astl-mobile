@@ -3,6 +3,7 @@
     <div class="back" @click="back()">
       <img :src="backImg" alt="">
     </div>
+    <scroller>
     <div class="banner">
       <img :src="JFPMBanner" alt="">
       <div class="my_icon">
@@ -27,8 +28,8 @@
             <img v-show="signonNum > 3" :src="JSPMXZ04" alt="" class="my_icon_img">
           </li>
           <li>
-            <img v-show="signonNum !== 5" :src="JSPMXZicon" alt="" class="my_icon_img">
-            <img v-show="signonNum === 5" :src="JSPMXZ05" alt="" class="my_icon_img">
+            <img v-show="signonNum < 5" :src="JSPMXZicon" alt="" class="my_icon_img">
+            <img v-show="signonNum >= 5" :src="JSPMXZ05" alt="" class="my_icon_img">
           </li>
         </ul>
       </div>
@@ -50,7 +51,8 @@
       </ul>
       <div class="user_info" :style="backgroundUser">
         <div class="left">
-          <div class="num">{{userPointRankData.rank}}</div>
+          <div v-show="showLeft" class="num">{{userPointRankData.rankday}}</div>
+          <div v-show="!showLeft" class="num">{{userPointRankData.rank}}</div>
           <div class="title">排名</div>
         </div>
         <div class="center">
@@ -64,7 +66,8 @@
           <div class="name">{{userPointRankData.name}}</div>
         </div>
         <div class="right">
-          <div class="num">{{userPointRankData.point}}</div>
+          <div v-show="showLeft" class="num">{{userPointRankData.pointday}}</div>
+          <div v-show="!showLeft" class="num">{{userPointRankData.point}}</div>
           <div class="title">积分</div>
         </div>
       </div>
@@ -73,7 +76,9 @@
       <ul class="list">
         <li v-for="(item, index) in rankDayData" :key="item.id" class="van-hairline--bottom">
           <div class="list_info">
-            <img v-show="index+1 < 4" class="special" :src="JFPM01" alt="">
+            <img v-show="index === 0" class="special" :src="JFPM01" alt="">
+            <img v-show="index === 1" class="special" :src="JFPM02" alt="">
+            <img v-show="index === 2" class="special" :src="JFPM03" alt="">
             <span v-show="index+1 > 3" class="special_num">{{index+1}}</span>
             <img class="picture" :src="item.avatar" alt="">
             <div class="list_name">{{item.name}}</div>
@@ -86,6 +91,7 @@
         </li>
       </ul>
     </div>
+    </scroller>
   </div>
 </template>
 
@@ -107,11 +113,12 @@ import CYHGCheckBtn from '@/assets/CYHG_check_btn.png'
 import CYHGDefeatBtn from '@/assets/CYHG_defeat_btn.png'
 import http from '@/api/http'
 import { Api } from '@/api/api'
+import wechat from 'weixin-js-sdk'
 export default {
   name: 'ranking',
   data () {
     return {
-      userId: localStorage.getItem('userId'),
+      userId: localStorage.getItem('userId2'),
       JFIcon: JFIcon,
       JSPMXZ01: JSPMXZ01,
       JSPMXZ02: JSPMXZ02,
@@ -141,12 +148,37 @@ export default {
       JFPMBanner: JFPMBanner
     }
   },
+  mounted () {
+    var that = this
+    wechat.ready(() => {
+      wechat.onMenuShareAppMessage({
+        title: '诺行合一', // 分享标题
+        desc: '贰零贰零年 积分排名', // 分享描述
+        link: window.location.href, // 分享链接；在微信上分享时，该链接的域名必须与企业某个应用的可信域名一致
+        imgUrl: 'https://astl.oss-cn-beijing.aliyuncs.com/h5/wx/JFPM_banner.png', // 分享图标
+        success: function () {
+          // 用户确认分享后执行的回调函数
+          that.watchAdd()
+        },
+        cancel: function () {
+          // 用户取消分享后执行的回调函数
+        }
+      })
+    })
+  },
   created: function () {
     this.getSignon()
     this.getUserPointRank()
     this.getRankDay()
   },
   methods: {
+    watchAdd () {
+      let params = {
+        userid: localStorage.getItem('userId')
+      }
+      http.post(Api.watchAdd, params).then(res => {
+      })
+    },
     tabBtn (item) {
       this.showLeft = item
       if (item) {
@@ -174,12 +206,7 @@ export default {
       })
     },
     back () {
-      if (window.history.length <= 1) {
-        this.$router.push({ path: '/' })
-        return false
-      } else {
-        this.$router.back()
-      }
+      this.$router.push({ path: '/' })
     },
     getSignon () {
       http.get(Api.getSignon + this.userId).then(res => {
@@ -187,10 +214,19 @@ export default {
       })
     }
   },
-  components: {}
+  components: {
+  }
 }
 </script>
 <style scoped lang="scss">
+  .ranking {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
   .van-hairline--bottom {
     display: flex;
     justify-content: space-between;
@@ -275,8 +311,8 @@ export default {
       line-height: 14px;
       color: #846952;
     }
+    text-align: center;
     position: absolute;
-    width: 40px;
     top: 18px;
     left: 50%;
     margin-left: -20px;

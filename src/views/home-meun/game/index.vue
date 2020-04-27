@@ -7,10 +7,19 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
+  computed: {
+    ...mapGetters([
+      'userId',
+      'userName',
+      'userImg'
+    ])
+  },
   data () {
     return {
-      iframeUrl: 'http://dt.wayhuh5.top/qywxkupaodati_kh_alk/index.php/index/index/index.html'
+      iframeUrl: `http://dt.wayhuh5.top/qywxkupaodati_kh_alk/index.php/index/index/middlepage?username=${this.userName}&wxid=${this.userId}&headimgurl=${this.userImg}`
     }
   },
   created: function () {

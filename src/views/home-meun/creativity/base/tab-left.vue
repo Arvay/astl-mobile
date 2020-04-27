@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div ref="areativity2">
     <ul class="list">
-      <li v-for="item in listDate" :key="item.id">
+      <li v-for="(item, index) in listDate" :key="item.id">
         <van-image
-          @click="goDetail(item.image)"
+          @click="goDetail(2, item.id)"
           width="170px"
           height="170px"
           radius="4px"
@@ -11,8 +11,8 @@
           :src="item.image"
         />
         <div class="info">
-          <p>
-            <span class="num">排名：1</span>
+          <p class="van-ellipsis nameW">
+            <span class="num">&nbsp;作品：{{index+1}}&nbsp;</span>
             <span class="name">{{item.name}}</span>
           </p>
           <p class="score">票数：{{item.votecount}}</p>
@@ -34,10 +34,10 @@ import TPCLick from '@/assets/TP_CLick.png'
 import CYDSBanner2 from '@/assets/about2.jpg'
 import http from '@/api/http'
 import { Api } from '@/api/api'
-import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
+      userId: localStorage.getItem('userId2'),
       showBtn: false,
       CYDSBanner2: CYDSBanner2,
       CYDSBanner: CYDSBanner,
@@ -46,10 +46,7 @@ export default {
       listDate: ''
     }
   },
-  computed: {
-    ...mapGetters([
-      'userId'
-    ])
+  mounted () {
   },
   created: function () {
     this.getList()
@@ -71,17 +68,18 @@ export default {
       })
     },
     getList () {
-      let user = localStorage.getItem('userId')
+      let user = localStorage.getItem('userId2')
       http.get(Api.getActivityList + `1/${user}`).then(res => {
         this.listDate = res.data
       })
     },
-    goDetail (src) {
-      ImagePreview ({
-        images: [
-          src
-        ]
-      })
+    goDetail (type, id) {
+      this.$router.push({ path: `/creativityDetails/${type}/${id}` })
+      // ImagePreview ({
+      //   images: [
+      //     src
+      //   ]
+      // })
     }
   },
   components: {
@@ -91,6 +89,9 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+  .nameW {
+    width: 70%;
+  }
   .info {
     position: relative;
     margin-top: 5px;
@@ -112,17 +113,16 @@ export default {
         border-radius: 2px;
         font-size: 12px;
         text-align: center;
-        line-height: 16px;
+        line-height: 20px;
         color: #ffffff;
         display: inline-block;
         background: #771011;
-        width: 46px;
       }
       .name {
         margin-left: 4px;
         color: #846952;
         font-size: 14px;
-        line-height: 16px;
+        line-height: 20px;
       }
     }
     .score {

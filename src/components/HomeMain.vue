@@ -1,8 +1,12 @@
 <template>
   <div class="home-box">
+    <div @click="openLock" class="openLock"></div>
     <div class="banner">
       <img src="../assets/HOME_banner.png" alt="">
     </div>
+<!--    <div v-show="isClear !== 1" @click="clearll" class="clear">-->
+<!--      <van-button plain type="info">清除缓存</van-button>-->
+<!--    </div>-->
     <div class="url_box">
       <ul class="menu" style="margin-top: 0">
         <li>
@@ -35,11 +39,12 @@
       <ul class="menu">
         <li>
           <!--合规云课堂-->
-          <img @click="goMeun('/spokesperson/2')" src="../assets/HOME_HGYKT_icon.png" alt="">
+          <img @click="goMeun('/spokesperson2')" src="../assets/HOME_HGYKT_icon.png" alt="">
         </li>
         <li>
           <!--合规手册-->
-          <img @click="goMeun('/notebook')" src="../assets/HOME_HGSC_icon.png" alt="">
+          <img v-show="!isLockUp" @click="goMeun('/notebook')" src="../assets/HOME_HGSC_icon.png" alt="">
+          <img v-show="isLockUp" src="https://astl.oss-cn-beijing.aliyuncs.com/h5/wx/HOME_HGSC_icon_unuse%202.png" alt="">
         </li>
         <li>
           <!--积分排名-->
@@ -50,25 +55,71 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
 import http from '@/api/http'
 import { Api } from '@/api/api'
 import { Toast } from 'vant'
+import HOMEBanner from '../assets/HOME_banner.png'
+import wechat from 'weixin-js-sdk'
+
 export default {
   name: 'FooterTabbar',
-  computed: {
-    ...mapGetters([
-      'userId',
-      'userName',
-      'userImg'
-    ])
-  },
   data () {
-    return {}
+    return {
+      userId: localStorage.getItem('userId2'),
+      userName: localStorage.getItem('userName'),
+      userImg: localStorage.getItem('userImg'),
+      isClear: localStorage.getItem('clearIs'),
+      clickNum: 0,
+      isLockUp: true,
+      time19: 1584678600000,
+      HOMEBanner: HOMEBanner
+    }
+  },
+  mounted () {
+    var that = this
+    wechat.ready(() => {
+      wechat.onMenuShareAppMessage({
+        title: '诺行合一', // 分享标题
+        desc: '贰零贰零年 合规周-首页', // 分享描述
+        link: window.location.href, // 分享链接；在微信上分享时，该链接的域名必须与企业某个应用的可信域名一致
+        imgUrl: 'https://astl.oss-cn-beijing.aliyuncs.com/h5/wx/HOME_banner.png', // 分享图标
+        success: function () {
+          // 用户确认分享后执行的回调函数
+          that.watchAdd()
+        },
+        cancel: function () {
+          // 用户取消分享后执行的回调函数
+        }
+      })
+    })
+  },
+  activated () {
+    let time = new Date().getTime()
+    if (time > this.time19) {
+      this.isLockUp = false
+    }
   },
   created () {
   },
   methods: {
+    clearll () {
+      localStorage.setItem('clearIs', 1)
+      window.localStorage.clear()
+      window.location.reload()
+    },
+    openLock () {
+      this.clickNum += 1
+      if (this.clickNum >= 5) {
+        this.isLockUp = false
+      }
+    },
+    watchAdd () {
+      let params = {
+        userid: localStorage.getItem('userId2')
+      }
+      http.post(Api.watchAdd, params).then(res => {
+      })
+    },
     test () {
       Toast('功能暂未开放')
     },
@@ -80,11 +131,11 @@ export default {
         this.saveSignon()
       } else if (url === 'game') {
         http.get(Api.game + this.userId)
-        if (!this.userId || !this.userName || !this.userImg) {
-          Toast('获取用户信息错误')
+        // this.$router.push({ path: '/game' })
+        if (this.userImg === '' || this.userImg === null || this.userImg === undefined || this.userImg === 'undefined') {
+          this.userImg = 'https://astl.oss-cn-beijing.aliyuncs.com/h5/wx/269961584330905_.pic_hd.jpg'
         }
-        // console.log(`http://dt.wayhuh5.top/qywxkupaodati_kh_alk/index.php/index/index/index.html?username=${this.userName}&wxid=${this.userId}&headimgurl=${this.userImg}`)
-        window.location.replace(`http://dt.wayhuh5.top/qywxkupaodati_kh_alk/index.php/index/index/middlepage?username=${this.userName}&wxid=${this.userId}&headimgurl=${this.userImg}`)
+        window.open(`http://dt.wayhuh5.top/qywxkupaodati_kh_alk/index.php/index/index/middlepage?username=${this.userName}&wxid=${this.userId}&headimgurl=${this.userImg}`)
         return
       }
       this.$router.push({ path: url })
@@ -94,6 +145,19 @@ export default {
 }
 </script>
 <style scoped>
+  .clear {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    background: #ffffff;
+  }
+  .openLock {
+    position: fixed;
+    width: 100px;
+    height: 80px;
+    left: 0;
+    top: 0;
+  }
   .url_box {
     background-image: url("../assets/HOME_IMG.png");
     background-size: 100% 100%;

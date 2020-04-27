@@ -1,5 +1,5 @@
 <template>
-  <div class="silkbag_box">
+  <div class="silkbag_box" @touchmove.prevent @touchmove="touchmove">
     <div class="back" @click="back()">
       <img :src="backImg" alt="">
     </div>
@@ -8,8 +8,8 @@
               scrolling="auto" frameborder="0" height="100%" width="100%">
       </iframe>
     </div>
-    <div @click="messageShow=true" class="check_message">
-      <img :src="HGJNPL" alt="">
+    <div class="check_message">
+      <img @click="openMessage" :src="HGJNPL" alt="">
     </div>
     <transition name="van-slide-up">
       <div v-show="messageShow" class="message_box">
@@ -17,11 +17,14 @@
         </div>
         <div class="comment_box">
           <div class="comment_header">
-            <span @click="messageShow=false"><van-icon size="0.5rem" name="cross" /></span>
+            <span @click="hidden"><van-icon size="0.5rem" name="cross" /></span>
             <span @click="popupShow">写留言</span>
           </div>
+          <div style="height: 40px"></div>
           <div @scroll="scroll" @touchend="touchend" id="scroll_id" class="scrol_box">
             <ul>
+              <scroller ref="my_scroller" :on-infinite="infinite" class="scrol_box1">
+                <li style="height: 20px"></li>
               <li v-for="(item, index) in contentData" :key="item.id" class="comment_list">
                 <div class="user_icon">
                   <img :src="item.avatar" alt="">
@@ -42,6 +45,7 @@
                 </div>
               </li>
               <li style="height: 80px"></li>
+              </scroller>
             </ul>
           </div>
         </div>
@@ -83,19 +87,21 @@ import DZClick from '@/assets/DZ_click_03.png'
 import HGJNPL from '@/assets/HGJN_PL.png'
 import http from '@/api/http'
 import { Api } from '@/api/api'
-import { mapGetters } from 'vuex'
 import { Notify, Toast } from 'vant'
+import wechat from 'weixin-js-sdk'
 
 export default {
-  name: 'silk_bag',
+  name: 'SilkBagDetail',
   data () {
     return {
+      userId: localStorage.getItem('userId2'),
+      dataInfo: '',
       HGJNPL: HGJNPL,
       pageNumber: 0,
       totalPages: 1,
       contentData: [],
       messageShow: false,
-      iframeUrl: 'https://open.work.weixin.qq.com/wwopen/mpnews?mixuin=0IE9DQAABwDYNaQQAAAUAA&mfid=WW0328-QXE5zwAABwDxzbjEyzrvmgKfse542&idx=0&sn=3ee10cb919067e1ad6ebb8b160635165',
+      iframeUrl: '',
       message: '',
       box: '',
       pos: '',
@@ -107,9 +113,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'userId'
-    ])
   },
   mounted () {
     this.$nextTick(() => {
@@ -128,7 +131,7 @@ export default {
           if (this.pageNumber < this.totalPages) {
             this.pageNumber += 1
           } else {
-            Toast('到底啦')
+            // Toast('我们都是有底线的~')
             return
           }
           this.getData()
@@ -141,16 +144,33 @@ export default {
     this.getActivityInfo()
   },
   methods: {
+    openMessage () {
+      this.messageShow = true
+    },
+    hidden () {
+      this.messageShow = false
+    },
+    /**
+     * 上拉获取
+     */
+    infinite (done) {
+      if (this.pageNumber < this.totalPages) {
+        this.pageNumber += 1
+        this.getData(2, done)
+      } else {
+        if (this.pageNumber !== 0) {
+          Toast('我们都是有底线的~')
+        }
+      }
+    },
+    touchmove (event) {
+      event.preventDefault()
+    },
     noZanBtn () {
       Toast('您已经为此评论点过赞了')
     },
     back () {
-      if (window.history.length <= 1) {
-        this.$router.push({ path: '/' })
-        return false
-      } else {
-        this.$router.back()
-      }
+      this.$router.push({ path: '/giftbag' })
     },
     zanBtn (index, id) {
       let params = {
@@ -207,24 +227,49 @@ export default {
           this.message = ''
           this.getData(1)
           this.goUnder()
+          this.$refs.my_scroller.finishInfinite(true)
         } else {
           Notify(res.message)
         }
         // this.contentData = res.data.content
       })
     },
+    watchAdd () {
+      let params = {
+        userid: localStorage.getItem('userId2')
+      }
+      http.post(Api.watchAdd, params).then(res => {
+      })
+    },
     getActivityInfo () {
+      var that = this
       let id = this.$route.params.id
       http.get(Api.getActivityDetail + id).then(res => {
         this.iframeUrl = res.data.name
+        this.dataInfo = res.data
+        wechat.ready(() => {
+          wechat.onMenuShareAppMessage({
+            title: '诺行合一', // 分享标题
+            desc: `合规锦囊《${res.data.title}》`, // 分享描述
+            link: window.location.href, // 分享链接；在微信上分享时，该链接的域名必须与企业某个应用的可信域名一致
+            imgUrl: 'https://astl.oss-cn-beijing.aliyuncs.com/h5/wx/HGJN_banner.png', // 分享图标
+            success: function () {
+              // 用户确认分享后执行的回调函数
+              that.watchAdd()
+            },
+            cancel: function () {
+              // 用户取消分享后执行的回调函数
+            }
+          })
+        })
       })
     },
-    getData (type) {
-      let user = localStorage.getItem('userId')
+    getData (type, done) {
+      let user = localStorage.getItem('userId2')
       let id = this.$route.params.id
       let params = {
         pageNumber: this.pageNumber,
-        pageSize: 10,
+        pageSize: 100,
         userid: user
       }
       http.post(Api.getCommentList + `${id}/${user}`, params).then(res => {
@@ -235,6 +280,9 @@ export default {
         }
         for (var x of res.data.content) {
           this.contentData.push(x)
+        }
+        if (done) {
+          done()
         }
       })
     },
@@ -264,10 +312,13 @@ export default {
     width: 100%;
   }
   .scrol_box {
-    position: absolute;
-    top: 40px;
-    bottom: 0;
-    overflow: scroll;
+  }
+  .scrol_box1 {
+    margin-top: 40px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 10px;
   }
   .check_message {
     width: 94px;
@@ -282,9 +333,7 @@ export default {
   }
   .iframe_box {
     width: 100%;
-    position: fixed;
-    top: 20px;
-    bottom: 0;
+    height: 100%;
   }
   .popup_header {
     -webkit-box-sizing: border-box;
@@ -385,6 +434,8 @@ export default {
     position: relative;
     height: 100%;
     .comment_header {
+      background: #ffffff;
+      z-index: 9;
       margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
@@ -401,6 +452,11 @@ export default {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     padding: 10px 10px;
+  }
+  .iframe_2 {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .silkbag_box {
     background: #ffffff;

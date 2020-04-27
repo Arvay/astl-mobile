@@ -3,8 +3,10 @@ import Router from 'vue-router'
 import Home from 'views/Home.vue'
 import NoteBook from 'views/home-meun/notebook/notebook'
 import Creativity from 'views/home-meun/creativity/index'
+import Creativity2 from 'views/home-meun/creativity/base/tab2-right'
 import CreativityDetails from 'views/home-meun/creativity/base/details'
 import Spokesperson from 'views/home-meun/spokesperson/index'
+import Spokesperson2 from 'views/home-meun/spokesperson/index2'
 import Lookback from 'views/home-meun/look-back/index'
 import Ranking from 'views/home-meun/ranking/index'
 import SilkBag from 'views/home-meun/silk-bag/index'
@@ -37,23 +39,31 @@ let routes = [
   },
   {
     path: '/creativity',
-    name: '合规创意大赛',
+    name: 'bbbbbbb',
     component: Creativity,
+    meta: {
+      title: '合规创意大赛'
+    }
+  },
+  {
+    path: '/creativity2',
+    name: 'creativity2',
+    component: Creativity2,
     meta: {
       title: '合规创意大赛',
       keepAlive: false
     }
   },
   {
-    path: '/creativityDetails/:type/:id',
-    name: '合规创意大赛-详情',
+    path: '/creativityDetails/:type/:id/:type2?',
+    name: 'creativityDetails',
     component: CreativityDetails,
     meta: {
       title: '合规创意大赛-详情'
     }
   },
   {
-    path: '/spokesperson/:type?',
+    path: '/spokesperson',
     name: '合规代言人',
     component: Spokesperson,
     meta: {
@@ -61,16 +71,24 @@ let routes = [
     }
   },
   {
+    path: '/spokesperson2',
+    name: 'spokesperson2',
+    component: Spokesperson2,
+    meta: {
+      title: '合规云课堂'
+    }
+  },
+  {
     path: '/lookback',
-    name: '精彩回归',
+    name: '精彩回顾',
     component: Lookback,
     meta: {
-      title: '精彩回归'
+      title: '精彩回顾'
     }
   },
   {
     path: '/giftbag',
-    name: '合规锦囊',
+    name: 'giftbag',
     component: SilkBag,
     meta: {
       title: '合规锦囊'
@@ -78,7 +96,7 @@ let routes = [
   },
   {
     path: '/giftBagDetail/:id',
-    name: '合规锦囊-详情',
+    name: 'SilkBagDetail',
     component: SilkBagDetail,
     meta: {
       title: '合规锦囊-详情'
@@ -94,7 +112,7 @@ let routes = [
   },
   {
     path: '/ranking',
-    name: '积分排名',
+    name: 'ranking',
     component: Ranking,
     meta: {
       title: '积分排名'
@@ -102,18 +120,18 @@ let routes = [
   },
   {
     path: '/checkpdf/:type',
-    name: '积分排名',
+    name: '合规手册',
     component: Checkpdf,
     meta: {
-      title: '积分排名'
+      title: '合规手册'
     }
   },
   {
     path: '/game',
-    name: '合规小游戏',
+    name: '不服来战，诺行挑战',
     component: Game,
     meta: {
-      title: '合规小游戏'
+      title: '不服来战，诺行挑战'
     }
   },
   {

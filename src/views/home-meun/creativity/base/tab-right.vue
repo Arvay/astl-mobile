@@ -1,17 +1,17 @@
 <template>
   <div class="box_box">
-    <div v-for="item in listDate" :key="item.id">
+    <div v-for="(item, index) in listDate" :key="item.id">
       <div v-if="item.image===''" class="text van-hairline--bottom">
         <div @click="goDetail(1, item.id)">
           <p class="van-ellipsis title">{{item.title}}</p>
           <div class="info">
-            <span class="num">排名：1</span>
-            <span class="name">{{item.name}}</span>
-            <span class="name score">票数：111111</span>
+            <span class="num">&nbsp;作品：{{index+1}}&nbsp;</span>
+            <span class="name">{{item.name | namedddd}}</span>
+            <span class="name score">票数：{{item.votecount}}</span>
           </div>
           <div class="vote_btn">
-            <img @click.stop="setVote(item.id)" :src="TPDefeat" alt=""> <!--未投-->
-            <!--              <img :src="TPCLick" alt=""> &lt;!&ndash;已投&ndash;&gt;-->
+            <img v-show="item.limit2===0" @click.stop="setVote(item.id)" :src="TPDefeat" alt=""> <!--未投-->
+            <img v-show="item.limit2===1" :src="TPCLick" alt=""> <!--已投-->
           </div>
         </div>
       </div>
@@ -24,9 +24,9 @@
             :src="item.image"
           />
           <div class="info">
-            <span class="num">排名：1</span>
-            <span class="name">{{item.name}}</span>
-            <span class="score">票数：{{item.votecount}}</span>
+            <span class="num">&nbsp;作品：{{index+1}}&nbsp;</span>
+            <span class="name">{{item.name | namedddd}}</span>
+            <span class="name score">票数：{{item.votecount}}</span>
             <div class="vote_btn">
               <img v-show="item.limit2===0" @click.stop="setVote(item.id)" :src="TPDefeat" alt=""> <!--未投-->
               <img v-show="item.limit2===1" :src="TPCLick" alt=""> <!--已投-->
@@ -55,6 +55,14 @@ export default {
       TPDefeat: TPDefeat,
       TPCLick: TPCLick,
       CYDSBanner: CYDSBanner
+    }
+  },
+  filters: {
+    namedddd (item) {
+      if (item) {
+        item = item.split('$分割$')[0]
+      }
+      return item
     }
   },
   computed: {
@@ -109,7 +117,6 @@ export default {
       .score {
         color: #846952;
         font-size: 12px;
-        margin-left: 130px;
       }
       .vote_btn {
         top: -1px;
@@ -131,21 +138,20 @@ export default {
     margin: 0;
     margin-top: 5px;
     .num {
+      display: inline-block;
       border-radius: 2px;
       font-size: 12px;
       text-align: center;
-      line-height: 16px;
+      line-height: 20px;
       color: #ffffff;
-      display: inline-block;
       background: #771011;
-      width: 46px;
       margin-bottom: 15px;
     }
     .name {
       margin-left: 4px;
       color: #846952;
       font-size: 14px;
-      line-height: 16px;
+      line-height: 20px;
     }
     .score {
       margin-left: 20px;

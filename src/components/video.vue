@@ -46,7 +46,16 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+  .video_box {
+    transform: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
   .wrapper {
+    transform: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -54,6 +63,7 @@ export default {
   }
 
   .block {
+    transform: none;
     width: 100%;
     height: 240px;
   }

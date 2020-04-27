@@ -8,8 +8,9 @@ import 'utils/permission'
 import SvgIcon from 'components/SvgIcon'
 import '@/icons' // icon
 import '@/style/common.scss'
-import { Lazyload, Popup, Image, ImagePreview, Overlay, Field, List, Icon, Notify } from 'vant'
+import { Lazyload, Popup, Image, ImagePreview, Overlay, Field, List, Icon, Notify, Button, Loading } from 'vant'
 import defaultSettings from '@/settings'
+import VueScroller from 'vue-scroller'
 import vueEsign from 'vue-esign'
 /**
  * If you don't want to use mock-server
@@ -25,13 +26,15 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 FastClick.attach(document.body)
-
+Vue.use(VueScroller)
 // 手写板
 Vue.use(vueEsign)
+Vue.use(Loading)
 Vue.use(Popup)
 Vue.use(Image)
 Vue.use(ImagePreview)
 Vue.use(Overlay)
+Vue.use(Button)
 Vue.use(Field)
 Vue.use(List)
 Vue.use(Icon)
@@ -47,11 +50,10 @@ if (process.env.NODE_ENV === 'development' && defaultSettings.vconsole) {
   // eslint-disable-next-line
   // const my_console = new VConsole()
 }
-// let href = window.location.href
-// if (href.indexOf('localhost') < 0) {
-//   const VConsole = require('vconsole')
-//   const my_console = new VConsole()
-// }
+if (localStorage.getItem('userName') === '陈威') {
+  const VConsole = require('vconsole')
+  const my_console = new VConsole()
+}
 
 Vue.config.productionTip = false
 

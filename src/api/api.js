@@ -4,10 +4,12 @@ if (href.indexOf('localhost') > 0 || href.indexOf(':8888') > 0) {
   host = '' // 如果本地调试
 }
 export var Api = {
+  getSig: `sig/get`, // 获取签名
   getUserId: `${host}userinfo/code/get/`, // 通过code获取userid
   getUserInfo: `${host}userinfo/get/`, // 通过用户信息
   getActivityList: `${host}activity/list/`, // 获取活动列表
   getCommentList: `${host}comment/list/`, // 评论列表
+  watchAdd: `${host}watch/add`, //  分享打点
   saveComment: `${host}comment/save`, // 评论
   commentLike: `${host}like/comment`, // 评论点赞
   activityLike: `${host}like/activity`, // 活动点赞

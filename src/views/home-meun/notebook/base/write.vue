@@ -36,9 +36,8 @@ export default {
     handleGenerate () {
       this.$refs.esign.generate().then(res => {
         this.$emit('trigger', res)
-      }).catch(err => {
+      }).catch(() => {
         // 画布没有签字时会执行这里 'Not Signned'
-        console.log(err)
       })
     }
   },

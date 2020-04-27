@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '合规周',
+  title: '',
 
   /**
    * @type {boolean} true | false
