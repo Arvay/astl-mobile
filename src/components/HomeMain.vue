@@ -1,6 +1,6 @@
 <template>
   <div class="home-box">
-<!--    <back @change="back"/>-->
+    <back @change="back"/>
     <div @click="openLock" class="openLock"></div>
     <div class="banner">
       <img src="../assets/HOME_banner.png" alt="">
