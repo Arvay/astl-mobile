@@ -19,7 +19,7 @@ export default {
   },
   data () {
     return {
-      iframeUrl: `http://dt.wayhuh5.top/qywxkupaodati_kh_alk/index.php/index/index/middlepage?username=${this.userName}&wxid=${this.userId}&headimgurl=${this.userImg}`
+      iframeUrl: `http://sc.wayhu.cc/qywxkupaodati_kh_alk/index.php/index/index/middlepage?username=${this.userName}&wxid=${this.userId}&headimgurl=${this.userImg}`
     }
   },
   created: function () {

@@ -1,14 +1,14 @@
 <template>
   <div class="promise_box">
     <scroller>
-    <div ref="imageTofile" class="promise">
-      <img class="backgroundImg" :src="CHENGNUO" alt="">
-      <img id="newImg" class="name" :src="base64" alt="">
-      <div class="email_box">{{userEmail}}</div>
-      <div class="time_box">{{systemDate}}</div>
-      <div class="department_box">{{department}}</div>
-      <div class="jobNum_box">{{jobNum}}</div>
-    </div>
+      <div ref="imageTofile" class="promise">
+        <img class="backgroundImg" :src="CHENGNUO" alt="">
+        <img @load="imgLoad" id="newImg" class="name" :src="base64" alt="">
+        <div class="email_box">{{userEmail}}</div>
+        <div class="time_box">{{systemDate}}</div>
+        <div class="department_box">{{department}}</div>
+        <div class="jobNum_box">{{jobNum}}</div>
+      </div>
     </scroller>
   </div>
 </template>
@@ -18,8 +18,12 @@ import CHENGNUO from '@/assets/chengnuoshu.jpg'
 import html2canvas from 'html2canvas'
 import http from '@/api/http'
 import { Api } from '@/api/api'
+import { Toast } from 'vant'
+
 export default {
   name: 'promise',
+  components: {
+  },
   props: {
     base64: {
       type: String,
@@ -28,6 +32,7 @@ export default {
   },
   data () {
     return {
+      isSuccess: false,
       jobNum: localStorage.getItem('astlcode') === 'undefined' ? '' : localStorage.getItem('astlcode'),
       systemDate: '',
       department: localStorage.getItem('department') === 'undefined' ? '' : localStorage.getItem('department'),
@@ -41,11 +46,16 @@ export default {
   },
   watch: {
     base64 () {
-      setTimeout(() => {
-        var imgs = new Image()
-        imgs.src = this.CHENGNUO
-        imgs.onload = this.toImage()
-      }, 3000)
+      Toast.loading({
+        duration: 0,
+        message: '文件生成中...',
+        forbidClick: true
+      })
+      // setTimeout(() => {
+      //   // var imgs = new Image()
+      //   // imgs.src = this.CHENGNUO
+      //   // imgs.onload = this.toImage()
+      // }, 3000)
     }
   },
   created: function () {
@@ -54,17 +64,25 @@ export default {
   mounted () {
   },
   methods: {
+    imgLoad () {
+      setTimeout(() => {
+        this.toImage()
+      }, 5000)
+    },
     toImage () {
       // 第一个参数是需要生成截图的元素,第二个是自己需要配置的参数,宽高等
       html2canvas(this.$refs.imageTofile, {
-        backgroundColor: null
+        backgroundColor: null,
+        logging: true,
+        allowTaint: true,
+        useCORS: true
       }).then((canvas) => {
         let url = canvas.toDataURL('image/png')
         this.htmlUrl = url
-
         var blob = this.getBlob(canvas)
         var oMyForm = new FormData()
-        var fileName = this.userEmail + '.jpg'
+        let nameNum = Math.floor(Math.random() * 90)
+        let fileName = this.userEmail + nameNum + '.png'
         oMyForm.append('file', blob, fileName)
         oMyForm.append('fileType', 'image')
         http.post(Api.uploadFile, oMyForm).then(res => {
@@ -76,6 +94,7 @@ export default {
           }
           http.post(Api.saveActivity, params).then(res => {
             this.$emit('base64succeed', res)
+            Toast.clear()
           })
         })
       })
@@ -104,8 +123,7 @@ export default {
     cilc () {
       // this.toImage()
     }
-  },
-  components: {}
+  }
 }
 </script>
 <style scoped lang="scss">

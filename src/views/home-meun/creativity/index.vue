@@ -19,11 +19,6 @@
         <transition name="van-slide-left">
           <TabLeft v-on:change="scrollTop" v-if="showLeft"></TabLeft>
         </transition>
-<!--        <div style="position: absolute;top: 0;right: 0;width: 100%">-->
-<!--          <transition name="van-slide-right">-->
-<!--            <TabRight2 v-if="!showLeft"></TabRight2>-->
-<!--          </transition>-->
-<!--        </div>-->
       </div>
     </div>
     </scroller>

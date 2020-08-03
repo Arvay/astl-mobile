@@ -1,5 +1,6 @@
 <template>
   <div class="home-box">
+<!--    <back @change="back"/>-->
     <div @click="openLock" class="openLock"></div>
     <div class="banner">
       <img src="../assets/HOME_banner.png" alt="">
@@ -60,6 +61,7 @@ import { Api } from '@/api/api'
 import { Toast } from 'vant'
 import HOMEBanner from '../assets/HOME_banner.png'
 import wechat from 'weixin-js-sdk'
+import Back from './back/Back'
 
 export default {
   name: 'FooterTabbar',
@@ -102,6 +104,9 @@ export default {
   created () {
   },
   methods: {
+    back () {
+      window.open('http://astl.magical-light.com/web')
+    },
     clearll () {
       localStorage.setItem('clearIs', 1)
       window.localStorage.clear()
@@ -135,13 +140,13 @@ export default {
         if (this.userImg === '' || this.userImg === null || this.userImg === undefined || this.userImg === 'undefined') {
           this.userImg = 'https://astl.oss-cn-beijing.aliyuncs.com/h5/wx/269961584330905_.pic_hd.jpg'
         }
-        window.open(`http://dt.wayhuh5.top/qywxkupaodati_kh_alk/index.php/index/index/middlepage?username=${this.userName}&wxid=${this.userId}&headimgurl=${this.userImg}`)
+        window.open(`http://sc.wayhu.cc/qywxkupaodati_kh_alk/index.php/index/index/middlepage?username=${this.userName}&wxid=${this.userId}&headimgurl=${this.userImg}`)
         return
       }
       this.$router.push({ path: url })
     }
   },
-  components: {}
+  components: {Back}
 }
 </script>
 <style scoped>

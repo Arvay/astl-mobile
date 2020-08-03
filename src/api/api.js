@@ -5,6 +5,7 @@ if (href.indexOf('localhost') > 0 || href.indexOf(':8888') > 0) {
 }
 export var Api = {
   getSig: `sig/get`, // 获取签名
+  activityDelete: `${host}activity/delete/`, // 删除签名
   getUserId: `${host}userinfo/code/get/`, // 通过code获取userid
   getUserInfo: `${host}userinfo/get/`, // 通过用户信息
   getActivityList: `${host}activity/list/`, // 获取活动列表
